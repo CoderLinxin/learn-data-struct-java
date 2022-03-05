@@ -87,10 +87,10 @@ public class MyArrayList<E> extends AbstractList<E> {
     }
 
     public E set(int index, E element) {
-        E preElement = this.get(index);
+        E oldElement = this.get(index);
         this.elements[index] = element;
 
-        return preElement;
+        return oldElement;
     }
 
     public E remove(int index) {
@@ -103,6 +103,9 @@ public class MyArrayList<E> extends AbstractList<E> {
 
         // 由于数组元素可能是引用类型数据，最后第 size-1 个元素需置空
         this.elements[--this.size] = null;
+
+        // 判断是否需要缩容
+        this.trim();
         return removeElement;
     }
 
@@ -119,6 +122,25 @@ public class MyArrayList<E> extends AbstractList<E> {
             return index;
         }
         return ELEMENT_NOT_FOUND;
+    }
+
+    /**
+     * 当数组超过指定容量时进行缩容
+     */
+    private void trim() {
+        int oldCapacity = this.elements.length;
+        int newCapacity = oldCapacity * 3 / 4;
+
+        // 剩余容量大于 1/2 时进行缩容
+        if (this.size < oldCapacity / 2 && oldCapacity > DEFAULT_CAPACITY) {
+            E[] newElements = (E[]) new Object[newCapacity];
+
+            // 拷贝原数组
+            for (int i = 0; i < this.size; i++)
+                newElements[i] = this.elements[i];
+
+            this.elements = newElements;
+        }
     }
 
     public int indexOf(E element) {

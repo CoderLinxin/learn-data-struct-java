@@ -48,14 +48,30 @@ public class Main {
 //        System.out.println(myArrayList.contains(40));
 //        System.out.println(myArrayList.get(0));
 
-        MyArrayList<Person> myArrayList = new MyArrayList<>();
-        myArrayList.add(new Person("张三", 44));
-        myArrayList.add(new Person("李四", 20));
-        myArrayList.add(new Person("王五", 18));
-        myArrayList.add(new Person("赵六", 40));
+//        MyArrayList<Person> myArrayList = new MyArrayList<>();
+//        myArrayList.add(new Person("张三", 44));
+//        myArrayList.add(new Person("李四", 20));
+//        myArrayList.add(new Person("王五", 18));
+//        myArrayList.add(new Person("赵六", 40));
 //        System.out.println(myArrayList.indexOf(new Person("老王", 18)));
 //        myArrayList.clear();
 //        System.gc();
+
+        MyArrayList<Integer> myArrayList = new MyArrayList<>();
+//        for (int i = 0; i < 50; i++)
+//            myArrayList.add(10);
+//
+//        for (int i = 0; i < 50; i++)
+//            myArrayList.remove(0);
+
+        for (int i = 0; i < 11; i++)
+            myArrayList.add(11);
+
+        for (int i = 0; i < 10; i++) {
+            myArrayList.remove(0);
+            myArrayList.add(10);
+        }
+
         myArrayList.traver();
     }
 }
