@@ -66,6 +66,7 @@ public class CircleQueue<E> {
 	
 	private int index(int index) {
 		index += front;
+		// 取模运算优化
 		return index - (index >= elements.length ? elements.length : 0);
 	}
 	
