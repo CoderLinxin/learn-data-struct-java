@@ -1,11 +1,13 @@
 package com.lx.树.src;
 
+import java.util.Comparator;
+
 /**
  * 实现一棵 AVL 树
  *
  * @param <E> 结点数据类型
  */
-public class AVLTree<E> extends BinarySearchTree<E> {
+public class AVLTree<E> extends BinaryBalancedSearchTree<E> {
     /**
      * 创建一个 AVL 树结点
      *
@@ -15,6 +17,14 @@ public class AVLTree<E> extends BinarySearchTree<E> {
      */
     protected Node<E> createNode(E element, Node<E> parent) {
         return new AVLNode(element, parent);
+    }
+
+    public AVLTree() {
+        this(null);
+    }
+
+    public AVLTree(Comparator<E> comparator) {
+        super(comparator);
     }
 
     /**
@@ -38,10 +48,10 @@ public class AVLTree<E> extends BinarySearchTree<E> {
         // 2.向上遍历过程中存在失衡结点 g，高度更新截止到 g 的子结点 p 处，此时通过对 g 进行调衡，调衡完毕后对 g 和 p 的高度进行更新，
         //  仅通过对 g 和 p 的高度值的更新，就可以让新子树 p 的所有祖先结点(原本是 g 的祖先结点)的高度值都回归正确(从而调衡完成后并不需要再向上遍历更新祖先结点的高度值)。
         //  为什么？
-        //  一切都来源于平衡因子的性质，在失衡前所有结点的高度值都是正确的，假设失衡前 g 的高度为 x，g 失衡后，
-        //  必然导致 g 子树的高度差(平衡因子)的绝对值 + 1，即 g 的高度必然变成了 x + 1，进行调衡后子树的根结点变成了 p，
-        //  调衡后新子树 p 的高度必然比失衡时 g 的高度小 1(x+1-1)，即新子树 p 的高度值为 x，这就与原来失衡前 g 的高度值一致，
-        //  故而失衡前基于 g 的高度值 x 所计算的 g 的所有祖先结点的高度值在调衡后仍然是正确的，即整棵树结点的高度都是正确的。
+        //  一切都来源于平衡因子的性质，在失衡前所有结点的高度值都是正确的，假设失衡前 g 的高度为 x，g 失衡后，（由于是添加结点操作）
+        //  必然导致 g 子树的高度差(平衡因子)的绝对值 + 1，也即必然导致较高子树的高度 + 1,即 g 的高度必然变成了 x + 1，进行调衡后子树的根结点变成了 p，
+        //  调衡后新子树 p 的高度必然比失衡时 g 的高度小 1，即 x+1-1，即新子树 p 的高度值为 x，这就与原来失衡前 g 的高度值一致，
+        //  故而基于失衡前 g 的高度值 x 所计算的 g 的所有祖先结点的高度值在调衡后仍然是正确的，即整棵树结点的高度都是正确的。
         //  故而调衡后高度值有误的结点仅有 p 和 g，故而仅需对 p 和 g 的高度进行更新。
         //  并且由于失衡前 g 的高度与调衡后 p 的高度一样，所以解决了 g 的失衡问题，祖先结点的失衡问题也不复存在，因此仅需将 g 调衡完毕整棵树也归于平衡。
 
@@ -55,6 +65,25 @@ public class AVLTree<E> extends BinarySearchTree<E> {
                 this.rebalanced(node); // 该结点重新平衡后整棵树都重新归于平衡，因此直接跳出循环
 //                this.rebalanced2(node);
                 break;
+            }
+        }
+    }
+
+    /**
+     * 每次删除结点后的回调
+     *
+     * @param node 实际被删除的结点
+     * @param replacement 被删除结点的替代结点（红黑树用到）
+     */
+    @Override
+    protected void afterRemove(Node<E> node, Node<E> replacement) {
+        // 从被删除结点处开始向上遍历
+        while ((node = node.parent) != null) {
+            if (this.isBalanced(node)) { // 遍历到的是平衡的结点
+                this.updateHeight(node); // 更新高度
+            } else { // 遍历到的是失衡结点
+                this.rebalanced(node); // 调衡完毕后继续向上遍历
+                node = node.parent; // 调衡完毕后 node 的父节点变成了子树的根结点（跳过 node），从这里继续向上遍历
             }
         }
     }
@@ -106,80 +135,6 @@ public class AVLTree<E> extends BinarySearchTree<E> {
     }
 
     /**
-     * 对传入的结点进行左旋转
-     * //             g
-     * //              \
-     * //               p           ->        p
-     * //              / \                   / \
-     * //           child n                 g   n
-     * //                                    \
-     * //                                   child
-     *
-     * @param grand 待左旋转的结点
-     */
-    private void rotateLeft(Node<E> grand) {
-        Node<E> parent = grand.right;
-        Node<E> child = parent.left;
-
-        // grand 进行左旋
-        parent.left = grand;
-        grand.right = child;
-
-        // 左旋后的善后工作
-        this.afterRotate(grand, parent, child);
-    }
-
-    /**
-     * 对传入的结点进行右旋转
-     * //            g
-     * //           /
-     * //          p         ->          p
-     * //         / \                   / \
-     * //        n child               n  g
-     * //                                /
-     * //                              child
-     *
-     * @param grand 待右旋转的结点
-     */
-    private void rotateRight(Node<E> grand) {
-        Node<E> parent = grand.left;
-        Node<E> child = parent.right;
-
-        // 进行右旋
-        parent.right = grand;
-        grand.left = child;
-
-        // 右旋后的善后工作
-        this.afterRotate(grand, parent, child);
-    }
-
-    /**
-     * 旋转后的善后工作（配置右旋转和左旋转的图来看代码）
-     *
-     * @param grand  旋转前的根结点
-     * @param parent 旋转后新的根结点
-     * @param child  旋转后需另外保存的结点
-     */
-    private void afterRotate(Node<E> grand, Node<E> parent, Node<E> child) {
-        /* 从上到下更新 parent、grand、child 的父节点指针 */
-
-        parent.parent = grand.parent; // 更新 parent 的父结点指针
-        // 让原来 grand 的父节点指向 parent
-        if (grand.isLeftChild()) grand.parent.left = parent; // grand 原来为左子结点
-        else if (grand.isRightChild()) grand.parent.right = parent; // grand 原来为右子结点
-        else this.root = parent; // grand 为根结点
-
-        grand.parent = parent; // 更新 grand 的父节点指针
-        if (child != null) child.parent = grand; // 更新 child 的父节点指针
-
-        // 先后更新 grand 和 parent 的高度（先更新 grand，再更新 parent
-        // （因为 parent 的高度计算依靠 grand 的高度））
-        // parent，grand 的高度更新完毕代表其所有祖先结点的高度都是正确的了
-        this.updateHeight(grand);
-        this.updateHeight(parent);
-    }
-
-    /**
      * 对传入的失衡结点进行平衡化处理（这里采用统一旋转的代码）
      *
      * @param grand 失衡结点
@@ -201,48 +156,24 @@ public class AVLTree<E> extends BinarySearchTree<E> {
         }
     }
 
-    /**
-     * 统一旋转的代码（目的为了塑造调衡后 a、b、c、e、e、f、g 所构成的子树）
-     * //               b、d、f 必不为空，且 a < b < c < d < e < f < g
-     * //                           d      (d 的父节点为 root)
-     * //                         /   \
-     * //                        b     f
-     * //                       / \   / \
-     * //                      a   c e   g
-     */
-    private void rotate(
-            Node<E> r, // 失衡结点
-            Node<E> a, Node<E> b, Node<E> c,
-            Node<E> d, Node<E> e, Node<E> f, Node<E> g
-    ) {
-        // 塑造 a、b、c 子树（a、c 可能为空）
-        b.left = a;
-        b.right = c;
-        if (c != null) c.parent = b;
-        if (a != null) a.parent = b;
+    @Override
+    protected void afterRotate(Node<E> grand, Node<E> parent, Node<E> child) {
+        super.afterRotate(grand, parent, child);
+
+        // 先后更新 grand 和 parent 的高度（先更新 grand，再更新 parent
+        // （因为 parent 的高度计算依靠 grand 的高度））
+        // parent，grand 的高度更新完毕代表其所有祖先结点的高度都是正确的了
+        this.updateHeight(grand);
+        this.updateHeight(parent);
+    }
+
+    @Override
+    protected void rotate(Node<E> r, Node<E> a, Node<E> b, Node<E> c, Node<E> d, Node<E> e, Node<E> f, Node<E> g) {
+        super.rotate(r, a, b, c, d, e, f, g);
+
         this.updateHeight(b); // b 的子树发生变化，更新 b 的高度
-
-        // 塑造 b、d、f 子树
-        d.parent = r.parent;
-        if (r.isRightChild()) {
-            r.parent.right = d;
-        } else if (r.isLeftChild()) {
-            r.parent.left = d;
-        } else { // 最终塑造的子树 d 为根结点
-            this.root = d;
-        }
-        d.left = b;
-        d.right = f;
-        b.parent = d;
-        f.parent = d;
-        this.updateHeight(d); // d 的子树发生变化，更新 d 的高度
-
-        // 塑造 e、f、g 子树（e、g 可能为空）
-        f.left = e;
-        f.right = g;
-        if (e != null) e.parent = f;
-        if (g != null) g.parent = f;
         this.updateHeight(f); // f 的子树发生变化，更新 f 的高度
+        this.updateHeight(d); // d 的子树发生变化，更新 d 的高度
     }
 
     /**
@@ -312,7 +243,12 @@ public class AVLTree<E> extends BinarySearchTree<E> {
 
         @Override
         public String toString() {
-            return "height: " + this.height;
+            Object str = this.element;
+            Node<E> parent = this.parent;
+            Object parentStr = "null";
+            if (parent != null)
+                parentStr = parent.element;
+            return str + "_parent(" + parentStr + ")" + "height: " + this.height;
         }
     }
 }

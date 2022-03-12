@@ -1,31 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="23be2b93-01af-4bf7-b5e4-6e0cb53250ab" name="Default" comment="" />
-    <ignored path="$PROJECT_DIR$/.tmp/" />
-    <ignored path="$PROJECT_DIR$/temp/" />
-    <ignored path="$PROJECT_DIR$/tmp/" />
-    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
-    <option name="TRACKING_ENABLED" value="true" />
+    <list default="true" id="23be2b93-01af-4bf7-b5e4-6e0cb53250ab" name="Default" comment="">
+      <change beforePath="$PROJECT_DIR$/../../../out/production/数据结构(java版)/com/lx/树/Main$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/../../../out/production/数据结构(java版)/com/lx/树/Main$1.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../out/production/数据结构(java版)/com/lx/树/Main$2.class" beforeDir="false" afterPath="$PROJECT_DIR$/../../../out/production/数据结构(java版)/com/lx/树/Main$2.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../out/production/数据结构(java版)/com/lx/树/Main$3.class" beforeDir="false" afterPath="$PROJECT_DIR$/../../../out/production/数据结构(java版)/com/lx/树/Main$3.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../out/production/数据结构(java版)/com/lx/树/Main$4.class" beforeDir="false" afterPath="$PROJECT_DIR$/../../../out/production/数据结构(java版)/com/lx/树/Main$4.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../out/production/数据结构(java版)/com/lx/树/Main$5.class" beforeDir="false" afterPath="$PROJECT_DIR$/../../../out/production/数据结构(java版)/com/lx/树/Main$5.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../out/production/数据结构(java版)/com/lx/树/Main$6.class" beforeDir="false" afterPath="$PROJECT_DIR$/../../../out/production/数据结构(java版)/com/lx/树/Main$6.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../out/production/数据结构(java版)/com/lx/树/Main$7.class" beforeDir="false" afterPath="$PROJECT_DIR$/../../../out/production/数据结构(java版)/com/lx/树/Main$7.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../out/production/数据结构(java版)/com/lx/树/Main$8.class" beforeDir="false" afterPath="$PROJECT_DIR$/../../../out/production/数据结构(java版)/com/lx/树/Main$8.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../out/production/数据结构(java版)/com/lx/树/Main$9.class" beforeDir="false" afterPath="$PROJECT_DIR$/../../../out/production/数据结构(java版)/com/lx/树/Main$9.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../out/production/数据结构(java版)/com/lx/树/Main$Person.class" beforeDir="false" afterPath="$PROJECT_DIR$/../../../out/production/数据结构(java版)/com/lx/树/Main$Person.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../out/production/数据结构(java版)/com/lx/树/Main.class" beforeDir="false" afterPath="$PROJECT_DIR$/../../../out/production/数据结构(java版)/com/lx/树/Main.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../out/production/数据结构(java版)/com/lx/树/src/AVLTree$AVLNode.class" beforeDir="false" afterPath="$PROJECT_DIR$/../../../out/production/数据结构(java版)/com/lx/树/src/AVLTree$AVLNode.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../out/production/数据结构(java版)/com/lx/树/src/AVLTree.class" beforeDir="false" afterPath="$PROJECT_DIR$/../../../out/production/数据结构(java版)/com/lx/树/src/AVLTree.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../out/production/数据结构(java版)/com/lx/树/src/BinarySearchTree.class" beforeDir="false" afterPath="$PROJECT_DIR$/../../../out/production/数据结构(java版)/com/lx/树/src/BinarySearchTree.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../src/com/lx/树/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/../../../src/com/lx/树/Main.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../src/com/lx/树/src/AVLTree.java" beforeDir="false" afterPath="$PROJECT_DIR$/../../../src/com/lx/树/src/AVLTree.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../src/com/lx/树/src/BinarySearchTree.java" beforeDir="false" afterPath="$PROJECT_DIR$/../../../src/com/lx/树/src/BinarySearchTree.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
-  </component>
-  <component name="ExecutionTargetManager" SELECTED_TARGET="default_target" />
-  <component name="FileEditorManager">
-    <leaf SIDE_TABS_SIZE_LIMIT_KEY="375">
-      <file leaf-file-name="RedBlack.js" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/AlgorithmLibrary/RedBlack.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="29">
-              <caret line="1263" column="45" lean-forward="false" selection-start-line="1263" selection-start-column="33" selection-end-line="1263" selection-end-column="45" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-    </leaf>
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
@@ -93,6 +92,9 @@
       <replace>删除的是红色节点.  不需要旋转.</replace>
     </replaceStrings>
   </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../../.." />
+  </component>
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
@@ -126,6 +128,8 @@
     <option name="width" value="1938" />
     <option name="height" value="1048" />
   </component>
+  <component name="ProjectId" id="26FQFb4YvBnO0Dyu4XH2ceFVa0A" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectView">
     <navigator currentView="ProjectPane" proportions="" version="1">
       <flattenPackages />
@@ -187,23 +191,16 @@
       </pane>
     </panes>
   </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
   <component name="PropertiesComponent">
+    <property name="HbShouldOpenHtmlAsHb" value="" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="last_opened_file_path" value="F:/CoderMJLee/BinaryTrees/BinaryTreeGraph" />
-    <property name="HbShouldOpenHtmlAsHb" value="" />
     <property name="settings.editor.selected.configurable" value="watcher.settings" />
-  </component>
-  <component name="RunDashboard">
-    <option name="ruleStates">
-      <list>
-        <RuleState>
-          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
-        </RuleState>
-        <RuleState>
-          <option name="name" value="StatusDashboardGroupingRule" />
-        </RuleState>
-      </list>
-    </option>
+    <property name="vue.rearranger.settings.migration" value="true" />
   </component>
   <component name="RunManager">
     <configuration default="true" type="DartCommandLineRunConfigurationType" factoryName="Dart Command Line Application">
@@ -212,70 +209,17 @@
     <configuration default="true" type="DartTestRunConfigurationType" factoryName="Dart Test">
       <method />
     </configuration>
-    <configuration default="true" type="JavaScriptTestRunnerJest" factoryName="Jest">
-      <node-interpreter value="project" />
-      <working-dir value="" />
-      <envs />
-      <scope-kind value="ALL" />
-      <method />
-    </configuration>
-    <configuration default="true" type="JavaScriptTestRunnerKarma" factoryName="Karma">
-      <config-file value="" />
-      <node-interpreter value="project" />
-      <envs />
-      <method />
-    </configuration>
-    <configuration default="true" type="JavaScriptTestRunnerProtractor" factoryName="Protractor">
-      <config-file value="" />
-      <node-interpreter value="project" />
-      <envs />
-      <method />
-    </configuration>
-    <configuration default="true" type="JavascriptDebugType" factoryName="JavaScript Debug">
-      <method />
-    </configuration>
-    <configuration default="true" type="NodeJSConfigurationType" factoryName="Node.js" path-to-node="project" working-dir="">
-      <method />
-    </configuration>
-    <configuration default="true" type="cucumber.js" factoryName="Cucumber.js">
-      <option name="cucumberJsArguments" value="" />
-      <option name="executablePath" />
-      <option name="filePath" />
-      <method />
-    </configuration>
-    <configuration default="true" type="js.build_tools.gulp" factoryName="Gulp.js">
+    <configuration default="true" type="js.build_tools.gulp">
       <node-interpreter>project</node-interpreter>
       <node-options />
       <gulpfile />
       <tasks />
       <arguments />
       <envs />
-      <method />
-    </configuration>
-    <configuration default="true" type="js.build_tools.npm" factoryName="npm">
-      <command value="run" />
-      <scripts />
-      <node-interpreter value="project" />
-      <envs />
-      <method />
-    </configuration>
-    <configuration default="true" type="mocha-javascript-test-runner" factoryName="Mocha">
-      <node-interpreter>project</node-interpreter>
-      <node-options />
-      <working-directory />
-      <pass-parent-env>true</pass-parent-env>
-      <envs />
-      <ui />
-      <extra-mocha-options />
-      <test-kind>DIRECTORY</test-kind>
-      <test-directory />
-      <recursive>false</recursive>
-      <method />
+      <method v="2" />
     </configuration>
   </component>
-  <component name="ShelveChangesManager" show_recycled="false">
-    <option name="remove_strategy" value="false" />
-  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="SvnConfiguration">
     <configuration />
   </component>
@@ -291,6 +235,7 @@
       <workItem from="1555210249901" duration="10000" />
       <workItem from="1555345623280" duration="153000" />
       <workItem from="1555396769535" duration="22000" />
+      <workItem from="1647016760519" duration="315000" />
     </task>
     <servers />
   </component>
@@ -320,14 +265,10 @@
     </layout>
   </component>
   <component name="TypeScriptGeneratedFilesManager">
-    <option name="processedProjectFiles" value="true" />
+    <option name="version" value="3" />
   </component>
   <component name="VcsContentAnnotationSettings">
     <option name="myLimit" value="2678400000" />
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager />
-    <watches-manager />
   </component>
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/AlgorithmLibrary/RedBlack.js">

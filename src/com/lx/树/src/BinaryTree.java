@@ -354,6 +354,18 @@ public class BinaryTree<E> implements BinaryTreeInfo { // BinaryTreeInfo 用于�
         public boolean isRightChild() {
             return this.parent != null && this.parent.right == this;
         }
+
+        /**
+         * 返回当前结点的兄弟结点
+         *
+         * @return 兄弟结点
+         */
+        public Node<E> sibling() {
+            if (this.isRightChild()) return this.parent.left;
+            if (this.isLeftChild()) return this.parent.right;
+
+            return null;
+        }
     }
 
     public String toString() {
@@ -488,11 +500,6 @@ public class BinaryTree<E> implements BinaryTreeInfo { // BinaryTreeInfo 用于�
 
     @Override
     public Object string(Object node) {
-        Object str = ((Node<E>) node).element;
-        Node<E> parent = ((Node<E>) node).parent;
-        Object parentStr = "null";
-        if (parent != null)
-            parentStr = parent.element;
-        return str + "_parent(" + parentStr + ")" + node;
+        return node;
     }
 }

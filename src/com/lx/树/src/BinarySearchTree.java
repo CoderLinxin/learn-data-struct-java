@@ -45,27 +45,41 @@ public class BinarySearchTree<E> extends BinaryTree<E> {
         /* 由于删除度为 2 的结点时同时需要用到删除度为 1，0 结点的逻辑，因此只需复用下述的逻辑即可 */
 
         Node<E> parent = node.parent; // 获取被删除结点的父结点
-        Node<E> child = node.left != null ? node.left : node.right; // 获取被删除结点的子结点
+        Node<E> child = node.left != null ? node.left : node.right; // 获取被删除结点的子结点(用于替代被删除的结点)
 
         if (child != null) { // 被删除的结点是度为 1 的结点
             if (parent == null) { // 被删除的结点是度为 1 的结点且为根结点
                 this.root = child;
             } else { // 被删除的结点是度为 1 的结点且非根结点
-                if (parent.left == node) parent.left = child;
-                if (parent.right == node) parent.right = child;
+                if (node.isLeftChild()) parent.left = child;
+                if (node.isRightChild()) parent.right = child;
             }
 
             child.parent = parent; // 更新 child.parent
+            this.afterRemove(node, child); // 删除结点后的回调
         } else { // 被删除的结点是叶子结点
             if (parent == null) { // 被删除的结点是叶子结点且是根结点(说明二叉树只有这一个结点
                 this.root = null; // 根结点直接置空
+
+                this.afterRemove(node, null); // 删除结点后的回调
             } else { // 被删除的结点是叶子结点且非根结点
-                if (parent.left == node) parent.left = null;
-                if (parent.right == node) parent.right = null;
+                if (node.isLeftChild()) parent.left = null;
+                if (node.isRightChild()) parent.right = null;
+
+                this.afterRemove(node, null); // 删除结点后的回调
             }
         }
 
         this.size--;
+    }
+
+    /**
+     * 删除结点后的回调（子类可重写该方法在删除结点后进行一些操作）
+     *
+     * @param node        实际被删除的结点
+     * @param replacement 被删除结点的替代结点
+     */
+    protected void afterRemove(Node<E> node, Node<E> replacement) {
     }
 
     /**

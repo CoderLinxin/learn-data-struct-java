@@ -4,8 +4,10 @@ import com.lx.树.printer.BinaryTrees;
 import com.lx.树.src.AVLTree;
 import com.lx.树.src.BinarySearchTree;
 import com.lx.树.src.BinaryTree;
+import com.lx.树.src.RedBlackTree;
 
 import java.util.Comparator;
+import java.util.Date;
 
 public class Main {
     static class Person implements Comparable {
@@ -137,18 +139,68 @@ public class Main {
     public static void test4(int[] data) {
         AVLTree<Integer> avlTree = new AVLTree<Integer>();
 
+//        for (int i = 0; i < data.length; i++)
+//            avlTree.add(data[i]);
+//
+//        BinaryTrees.println(avlTree);
+
         for (int i = 0; i < data.length; i++)
             avlTree.add(data[i]);
+        for (int i = 0; i < data.length; i++) {
+            System.out.println("[ " + data[i] + " ]");
+            avlTree.remove(data[i]);
+            BinaryTrees.println(avlTree);
+            System.out.println("-------------------------------------------------------------------\n");
+        }
+    }
 
-        BinaryTrees.println(avlTree);
+    public static void test5(int num) {
+        int[] data = new int[num];
+        for (int i = 0; i < num; i++)
+            data[i] = (int) Math.random() * num;
+
+        AVLTree<Integer> avlTree = new AVLTree<>();
+        long start1 = new Date().getTime();
+        for (int i = 0; i < num; i++)
+            avlTree.add(data[i]);
+        for (int i = 0; i < num; i++)
+            avlTree.contains(data[i]);
+        for (int i = 0; i < num; i++)
+            avlTree.remove(data[i]);
+        long end1 = new Date().getTime();
+        System.out.println("AVL 执行时间：" + (end1 - start1));
+
+        BinarySearchTree<Integer> bST = new BinarySearchTree<>();
+        long start2 = new Date().getTime();
+        for (int i = 0; i < num; i++)
+            bST.add(data[i]);
+        for (int i = 0; i < num; i++)
+            bST.contains(data[i]);
+        for (int i = 0; i < num; i++)
+            bST.remove(data[i]);
+        long end2 = new Date().getTime();
+        System.out.println("bST 执行时间：" + (end2 - start2));
+    }
+
+    public static void test6(int[] data) {
+        RedBlackTree<Integer> redBlackTree = new RedBlackTree<Integer>();
+
+        for (int i = 0; i < data.length; i++) {
+            System.out.println("[" + data[i] + "]");
+            redBlackTree.add(data[i]);
+            BinaryTrees.println(redBlackTree);
+            System.out.println("--------------------\n");
+        }
     }
 
     public static void main(String[] args) {
         int[] data = new int[]{
-                59, 51, 24, 83, 86, 57, 84, 18, 88, 85, 68, 95, 80, 49, 56, 26, 70, 36
+                51, 72, 27, 70, 99, 46, 88, 64, 94, 52, 84, 62, 41, 32, 92, 76, 83, 30, 44, 59
         };
 
 //        test1(data);
-        test4(data);
+//        test4(data);
+//        test5(10000000);
+        test6(data);
     }
 }
