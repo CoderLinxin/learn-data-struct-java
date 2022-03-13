@@ -70,23 +70,45 @@ public class RedBlackTree<E> extends BinaryBalancedSearchTree<E> {
     protected void afterRemove(Node<E> node, Node<E> replacement) {
         if (this.isRed(node)) return; // 实际被删除结点是 RED 结点，直接返回
 
-        // 实际被删除结点是 BLACK 结点，replacement 为 null 的情况无须处理
-        if (this.isRed(replacement)) { // 删除的是拥有一个 RED 子结点的 BLACK 结点
-            setBlack(replacement); // 将替代结点染黑
-        } else { // 删除的 BLACK 结点是叶子结点
-            // 获取父结点
-            Node<E> parent = node.parent;
+        /*   实际被删除结点是 BLACK 结点   */
 
+        if (this.isRed(replacement)) { // 删除的是拥有一个 RED 子结点(替代结点)的 BLACK 结点
+            setBlack(replacement); // 将替代结点染黑
+        } else { // 删除的 BLACK 结点是叶子结点(处理下溢)
+            Node<E> parent = node.parent; // 获取父结点
             if (parent == null) return; // 删除的 BLACK 结点是叶子结点且是根结点
 
             /*   删除的 BLACK 结点是叶子结点且不是根结点   */
 
-            boolean isLeft = parent.left == null; // 被删除结点是否曾是左子结点
+            // 被删除结点是否曾是左子结点(左边的判断条件代表传入的 node 是真正被删除的结点，右边的条件代表 node 是因父节点向下合并时产生新的下溢而传入的父节点(并没有删除任何结点))
+            boolean isLeft = parent.left == null || node.isLeftChild();
             // 获取兄弟结点(由于被删除结点的 parent 已经断了与被删除结点的连线，所以用下面的方法获取 node 的兄弟结点)
             Node<E> sibling = isLeft ? parent.right : parent.left;
 
-            if (isLeft) { // 被删除结点在左边，兄弟结点在右边
+            if (isLeft) { // 被删除结点在左边，兄弟结点在右边（与下面的情况对称）
+                if (this.isRed(sibling)) {
+                    setBlack(sibling);
+                    setRed(parent);
+                    this.rotateLeft(parent);
+                    sibling = parent.right;
+                }
 
+                if (this.isBlack(sibling.left) && this.isBlack(sibling.right)) {
+                    boolean parentBlack = this.isBlack(node.parent);
+                    this.setBlack(parent);
+                    this.setRed(sibling);
+                    if (parentBlack) this.afterRemove(parent, null);
+                } else {
+                    if (this.isBlack(sibling.right)) {
+                        this.rotateRight(sibling);
+                        sibling = parent.right;
+                    }
+
+                    this.setColor(sibling, this.colorOf(parent));
+                    this.setBlack(sibling.right);
+                    this.setBlack(parent);
+                    this.rotateLeft(parent);
+                }
             } else { // 被删除结点在右边，兄弟结点在左边
                 if (this.isRed(sibling)) { // 兄弟结点为红色:进行 B 树的等价变换
                     setBlack(sibling);
@@ -98,6 +120,27 @@ public class RedBlackTree<E> extends BinaryBalancedSearchTree<E> {
 
                 /*   统一处理兄弟结点为 BLACK 的情况   */
 
+                // sibling 没有任何子结点(子结点指针都为 null)(不可能有两个黑色子结点，否则 sibling 就不是 B 树的叶子结点):不可借出
+                if (this.isBlack(sibling.left) && this.isBlack(sibling.right)) { // parent 向下合并
+                    // 判断原来的 parent 是否为黑色
+                    boolean parentBlack = this.isBlack(node.parent);
+                    this.setBlack(parent);
+                    this.setRed(sibling);
+                    if (parentBlack) this.afterRemove(parent, null); // 继续处理父节点的上溢
+                } else { // sibling 至少有一个 RED 子结点:可以借出
+                    // 黑兄弟左子结点为 null，需要进行双旋
+                    if (this.isBlack(sibling.left)) {
+                        this.rotateLeft(sibling); // 统一先处理左旋
+                        sibling = parent.left; // 左旋后需要更新 sibling
+                    }
+
+                    /* 兄弟结点左子结点为 RED 或兄弟结点左/右子结点都是 RED 的情况 */
+
+                    this.setColor(sibling, this.colorOf(parent)); // 中间结点继承父节点的颜色
+                    this.setBlack(sibling.left);
+                    this.setBlack(parent);
+                    this.rotateRight(parent); // 统一处理右旋
+                }
             }
         }
     }

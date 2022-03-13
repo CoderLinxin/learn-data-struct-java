@@ -185,22 +185,25 @@ public class Main {
     public static void test6(int[] data) {
         RedBlackTree<Integer> redBlackTree = new RedBlackTree<Integer>();
 
-        for (int i = 0; i < data.length; i++) {
-            System.out.println("[" + data[i] + "]");
+        for (int i = 0; i < data.length; i++)
             redBlackTree.add(data[i]);
-            BinaryTrees.println(redBlackTree);
-            System.out.println("--------------------\n");
+        BinaryTrees.println(redBlackTree);
+
+        for (int i = 0; i < data.length; i++) {
+            redBlackTree.remove(data[i]);
         }
+//        BinaryTrees.println(redBlackTree);
     }
 
     public static void main(String[] args) {
         int[] data = new int[]{
-                51, 72, 27, 70, 99, 46, 88, 64, 94, 52, 84, 62, 41, 32, 92, 76, 83, 30, 44, 59
+                9, 96, 24, 26, 97, 78, 39, 13, 55, 231
         };
 
 //        test1(data);
 //        test4(data);
 //        test5(10000000);
         test6(data);
+
     }
 }
