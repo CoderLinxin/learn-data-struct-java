@@ -1,6 +1,7 @@
 package com.lx.集合;
 
 import com.lx.集合.src.ListSet;
+import com.lx.集合.src.MapSet;
 import com.lx.集合.src.Set;
 import com.lx.集合.src.Set.Visitor;
 import com.lx.集合.src.TreeSet;
@@ -44,7 +45,31 @@ public class Main {
 
     }
 
+    public static void tets3() {
+        MapSet<Integer> mapSet = new MapSet<>();
+
+        mapSet.add(12);
+        mapSet.add(11);
+        mapSet.add(11);
+        mapSet.add(15);
+        mapSet.add(11);
+
+        mapSet.traversal(new Visitor<>() { // 匿名类（继承了 Visitor 抽象类）
+            @Override
+            public boolean visit(Integer element) {
+                System.out.println(element);
+                return false;
+            }
+        });
+
+    }
+
+
     public static void main(String[] args) {
-        tets2();
+//        tets2();
+//        tets3();
+
+        System.out.println(Float.floatToRawIntBits(1.6f));
+        System.out.println(Float.floatToIntBits(1.6f));
     }
 }
