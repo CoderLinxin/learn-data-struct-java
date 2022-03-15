@@ -2,9 +2,7 @@ package com.lx.映射.src;
 
 import com.lx.线性表.链表.src.BidirectionalLinkedList;
 import com.lx.线性表.链表.src.List;
-
 import java.util.Comparator;
-import java.util.Objects;
 
 /**
  * 使用双向链表实现的 map(映射)
@@ -12,7 +10,7 @@ import java.util.Objects;
  * @param <K> 键(可比较)
  * @param <V> 值(不可比较)
  */
-public class LinkedListMap<K, V> {
+public class LinkedListMap<K, V> implements Map<K, V> {
     private final BidirectionalLinkedList<Node<K, V>> list = new BidirectionalLinkedList<>();
     private final Comparator<K> comparator;
 
@@ -143,18 +141,6 @@ public class LinkedListMap<K, V> {
             Node<K, V> map = this.list.get(i);
             visitor.visit(map.key, map.value);
         }
-    }
-
-    /**
-     * 访问映射的接口
-     *
-     * @param <K> 键类型
-     * @param <V> 值类型
-     */
-    public static abstract class Visitor<K, V> {
-        boolean stop;
-
-        public abstract boolean visit(K key, V value);
     }
 
     /**
