@@ -229,11 +229,12 @@ public class Main {
     }
 
     static void test8(LinkedHashMap<Object, Integer> map) {
-        for (int i = 0; i < 20; i++)
-            map.put(new SubKey1(i), i);
+        map.put("李华", 18);
+        map.put("张三", 18);
+        map.put("李四", 18);
+        map.put("王五", 18);
 
-        map.remove(new SubKey1(10));
-        System.out.println(map.size());
+        map.remove("李四");
 
         map.traversal(new Visitor<Object, Integer>() {
             @Override
@@ -253,14 +254,14 @@ public class Main {
 
 //        test2();
 
-//        long start = new Date().getTime();
-//        test3(new HashMap<>());
-//        test4(new HashMap<>());
-//        test5(new HashMap<>());
-//        test6(new HashMap<>());
-////        test7(new HashMap<>(), 500000);
-//        long end = new Date().getTime();
-//        System.out.println((end - start) / 1000.0 + "s");
+        long start = new Date().getTime();
+        test3(new LinkedHashMap<>());
+        test4(new LinkedHashMap<>());
+        test5(new LinkedHashMap<>());
+        test6(new LinkedHashMap<>());
+//        test7(new HashMap<>(), 500000);
+        long end = new Date().getTime();
+        System.out.println((end - start) / 1000.0 + "s");
 
         test8(new LinkedHashMap<>());
     }

@@ -61,8 +61,8 @@ public class LinkedHashMap<K, V> extends HashMap<K, V> {
 
         /* 双向链表中删除 node2 结点 */
 
-        LinkedNode<K,V> prev = node2.prev;
-        LinkedNode<K,V> next = node2.next;
+        LinkedNode<K, V> prev = node2.prev;
+        LinkedNode<K, V> next = node2.next;
 
         // node2 为根结点
         if (prev == null) this.first = next;
@@ -109,6 +109,28 @@ public class LinkedHashMap<K, V> extends HashMap<K, V> {
         }
 
         return newNode;
+    }
+
+    @Override
+    public boolean containsValue(V value) {
+        LinkedNode<K, V> traverNode = this.first;
+        while (traverNode != null) {
+            if (value == traverNode.value) return true;
+            traverNode = traverNode.next;
+        }
+
+        return false;
+    }
+
+    @Override
+    public boolean containsKey(K key) {
+        LinkedNode<K, V> traverNode = this.first;
+        while (traverNode != null) {
+            if (key == traverNode.key) return true;
+            traverNode = traverNode.next;
+        }
+
+        return false;
     }
 
     private class LinkedNode<K, V> extends Node<K, V> {

@@ -1,14 +1,11 @@
 package com.lx.集合;
 
-import com.lx.集合.src.ListSet;
-import com.lx.集合.src.MapSet;
-import com.lx.集合.src.Set;
+import com.lx.集合.src.*;
 import com.lx.集合.src.Set.Visitor;
-import com.lx.集合.src.TreeSet;
 
 public class Main {
     public static void tets1() {
-        Set<Integer> listSet = new ListSet<>();
+        HashSet<Integer> listSet = new HashSet<>();
 
         listSet.add(11);
         listSet.add(12);
@@ -27,7 +24,7 @@ public class Main {
     }
 
     public static void tets2() {
-        TreeSet<Integer> treeSet = new TreeSet<>();
+        HashSet<Integer> treeSet = new HashSet<>();
 
         treeSet.add(11);
         treeSet.add(12);
@@ -46,7 +43,7 @@ public class Main {
     }
 
     public static void tets3() {
-        MapSet<Integer> mapSet = new MapSet<>();
+        LinkedHashSet<Integer> mapSet = new LinkedHashSet<>();
 
         mapSet.add(12);
         mapSet.add(11);
@@ -67,7 +64,7 @@ public class Main {
 
     public static void main(String[] args) {
 //        tets2();
-//        tets3();
+        tets3();
 
         System.out.println(Float.floatToRawIntBits(1.6f));
         System.out.println(Float.floatToIntBits(1.6f));

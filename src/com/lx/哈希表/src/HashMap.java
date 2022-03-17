@@ -238,7 +238,7 @@ public class HashMap<K, V> implements Map<K, V> {
         if (cmp < 0) parent.left = node;
         else parent.right = node;
         node.parent = parent;
-        fixAfterPut(node); // 修复红黑树性质
+        fixAfterPut(node); // 修复红黑树性质Node.left;
     }
 
     /**
@@ -471,9 +471,9 @@ public class HashMap<K, V> implements Map<K, V> {
             }
 
             fixAfterRemove(node); // 删除结点后修复红黑树性质
-            afterRemove(willRemoveNode, node); // 删除结点后的一些处理
         }
 
+        afterRemove(willRemoveNode, node); // 删除结点后的一些处理
         return oldValue;
     }
 
