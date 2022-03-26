@@ -2,6 +2,7 @@
   <dictionary name="Administrator">
     <words>
       <w>heapify</w>
+      <w>nlog</w>
     </words>
   </dictionary>
 </component>
