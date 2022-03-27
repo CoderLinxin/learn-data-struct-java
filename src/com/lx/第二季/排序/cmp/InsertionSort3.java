@@ -10,7 +10,7 @@ public class InsertionSort3<E extends Comparable<E>> extends Sort<E> {
     @Override
     protected void sort() {
         for (int begin = 1; begin <= this.array.length - 1; begin++) { // 从索引 1 开始调整元素
-            // 待插入元素位置的情况就不需要迭代
+            // 待插入元素位置不需要调整的情况就不需要迭代
             if (this.cmp(begin, begin - 1) >= 0) continue;
             this.insert(begin, this.search(begin));
         }
@@ -28,9 +28,6 @@ public class InsertionSort3<E extends Comparable<E>> extends Sort<E> {
 
         // [dest, source-1] 中的元素向后挪动一位
         while (source > dest) {
-            // todo:下面的代码为什么错误? 逆天 先算左边再算右边的，明天看看 JS 怎么样
-            // todo:左操作数使用了 i--，右操作数不要使用 i 相关的变量
-//            this.array[source--] = this.array[source - 1];
             this.array[source] = this.array[source - 1];
             source--;
         }

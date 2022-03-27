@@ -2,7 +2,7 @@ package com.lx.第二季.排序.cmp;
 
 public class BubbleSort1<E extends Comparable<E>> extends Sort<E> {
     /**
-     * 冒泡排序(无优化)(稳定排序)
+     * 冒泡排序(无优化)(稳定排序)(原地排序)
      * 最好: O(N^2)
      * 平均: O(N^2)
      * 最坏: O(N^2)

@@ -102,6 +102,8 @@ public abstract class Sort<E extends Comparable<E>> implements Comparable<Sort<E
 
     // 评价排序算法是否稳定(仅需判断针对 Student 的排序是否稳定即可)
     private boolean isStable() {
+        if (this instanceof ShellSort) return false; // 希尔排序稳定性不适用于下面的方法判断(因为希尔排序是逐列排序的)
+
         Student[] students = new Student[20];
 
         for (int i = 0; i < students.length; i++) {

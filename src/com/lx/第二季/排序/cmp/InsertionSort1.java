@@ -2,7 +2,7 @@ package com.lx.第二季.排序.cmp;
 
 public class InsertionSort1<E extends Comparable<E>> extends Sort<E> {
     /**
-     * 插入排序(稳定排序)
+     * 插入排序(稳定排序)(原地排序)
      * 最好: O(N): 序列完全有序时仅迭代一次
      * 平均: O(N^2)
      * 最坏: O(N^2)

@@ -2,7 +2,7 @@ package com.lx.第二季.排序.cmp;
 
 public class SelectionSort<E extends Comparable<E>> extends Sort<E> {
     /**
-     * 选择排序(稳定排序)
+     * 选择排序(稳定排序)(原地排序)
      * 最好: O(N^2): 每轮迭代仍需查找整个无序序列才能确定最大值
      * 平均: O(N^2)
      * 最坏: O(N^2)

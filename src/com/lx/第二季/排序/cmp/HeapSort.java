@@ -4,7 +4,7 @@ public class HeapSort<E extends Comparable<E>> extends Sort<E> {
     private int heapSize; // 记录堆的大小
 
     /**
-     * 堆排序(不稳定排序)
+     * 堆排序(不稳定排序)(原地排序)
      * 最好: O(NlogN): 每次迭代的下滤操作仍是 O(logN)
      * 平均: O(NlogN)
      * 最坏: O(NlogN)
