@@ -27,9 +27,10 @@ public class ShellSort<E extends Comparable<E>> extends Sort<E> {
     protected void sort(int step) {
         for (int col = 0; col < step; col++) { // 对 [0, step) 所有列进行插入排序
 
-            // 从每列的第二个元素开始进行插入排序(步长为 step)
+            // 从每列的第二个元素开始进行插入排序(索引步长为 step)
             int secondRow= col + step;
 
+            // 对每列进行插入排序(上限仍选 array.length - 1 即可)
             for (int begin = secondRow; begin <= this.array.length - 1; begin += step) {
 
                 for (int traverIndex = begin; traverIndex >= secondRow; traverIndex -= step) {

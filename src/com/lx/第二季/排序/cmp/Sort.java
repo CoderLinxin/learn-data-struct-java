@@ -1,6 +1,10 @@
 package com.lx.第二季.排序.cmp;
 
 import com.lx.第二季.排序.Student;
+import com.lx.第二季.排序.none_cmp.CountingSort1;
+import com.lx.第二季.排序.none_cmp.CountingSort2;
+import com.lx.第二季.排序.none_cmp.RadixSort1;
+import com.lx.第二季.排序.none_cmp.RadixSort2;
 
 import java.text.DecimalFormat;
 
@@ -103,6 +107,10 @@ public abstract class Sort<E extends Comparable<E>> implements Comparable<Sort<E
     // 评价排序算法是否稳定(仅需判断针对 Student 的排序是否稳定即可)
     private boolean isStable() {
         if (this instanceof ShellSort) return false; // 希尔排序稳定性不适用于下面的方法判断(因为希尔排序是逐列排序的)
+        if (this instanceof CountingSort1) return false;
+        if (this instanceof CountingSort2) return true;
+        if (this instanceof RadixSort1) return true;
+        if (this instanceof RadixSort2) return true;
 
         Student[] students = new Student[20];
 
