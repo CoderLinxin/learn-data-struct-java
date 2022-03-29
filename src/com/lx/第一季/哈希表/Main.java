@@ -10,6 +10,7 @@ import com.lx.第一季.哈希表.test.Asserts;
 import com.lx.第一季.映射.src.Map;
 
 import java.util.Date;
+import java.util.Objects;
 
 public class Main {
     static class Student {
@@ -253,15 +254,40 @@ public class Main {
 
 //        test2();
 
-        long start = new Date().getTime();
-        test3(new LinkedHashMap<>());
-        test4(new LinkedHashMap<>());
-        test5(new LinkedHashMap<>());
-        test6(new LinkedHashMap<>());
-//        test7(new HashMap<>(), 500000);
-        long end = new Date().getTime();
-        System.out.println((end - start) / 1000.0 + "s");
+//        long start = new Date().getTime();
+//        test3(new LinkedHashMap<>());
+//        test4(new LinkedHashMap<>());
+//        test5(new LinkedHashMap<>());
+//        test6(new LinkedHashMap<>());
+////        test7(new HashMap<>(), 500000);
+//        long end = new Date().getTime();
+//        System.out.println((end - start) / 1000.0 + "s");
+//
+//        test8(new LinkedHashMap<>());
 
-        test8(new LinkedHashMap<>());
+        Map<Object, String> map = new HashMap<>();
+        map.put(new Teacher(18), "hello");
+        System.out.println(map.get(new Teacher(18)));
+    }
+
+    static class Teacher {
+        public Teacher(int age) {
+            this.age = age;
+        }
+
+        private int age;
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            Teacher teacher = (Teacher) o;
+            return age == teacher.age;
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(age);
+        }
     }
 }

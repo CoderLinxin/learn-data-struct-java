@@ -5,10 +5,10 @@ import com.lx.第二季.排序.cmp.Sort;
 public class RadixSort2 extends Sort<Integer> {
     /**
      * 基数排序实现2(稳定排序)(非原地排序)
-     * 最好:
-     * 平均:
-     * 最坏:
-     * 空间复杂度:
+     * 最好:O(dN) d为最大元素的位数
+     * 平均:O(dN)
+     * 最坏:O(dN)
+     * 空间复杂度:O(kN+k) k 为元素的进制,d为最大元素的位数
      */
     @Override
     protected void sort() {
