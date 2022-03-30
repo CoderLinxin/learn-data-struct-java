@@ -46,7 +46,7 @@ public class Main {
         System.out.println(unionFind.isSame(6, 0));
     }
 
-    private static final int count = 1000000;
+    private static final int count = 100000;
 
     private static void test3(UnionFind unionFind) {
         Times.test(unionFind.getClass().getSimpleName(), () -> {
@@ -55,6 +55,37 @@ public class Main {
 
             for (int i = 0; i < count; i++)
                 unionFind.isSame((int) (Math.random() * count), (int) (Math.random() * count));
+
+            unionFind.union(0, 1);
+            unionFind.union(0, 4);
+            unionFind.union(0, 3);
+            unionFind.union(3, 2);
+            unionFind.union(3, 5);
+
+            unionFind.union(6, 7);
+
+            unionFind.union(8, 9);
+            unionFind.union(8, 10);
+            unionFind.union(9, 11);
+
+            unionFind.union(2, 6);
+            Asserts.test(unionFind.isSame(6, 0));
+        });
+    }
+
+    public static void test4(GenerationUnionFind unionFind) {
+        Times.test(unionFind.getClass().getSimpleName(), () -> {
+            for (int i = 0; i < count; i++)
+                unionFind.makeSet((int) (Math.random() * count));
+
+            for (int i = 0; i < count; i++)
+                unionFind.union((int) (Math.random() * count), (int) (Math.random() * count));
+
+            for (int i = 0; i < count; i++)
+                unionFind.isSame((int) (Math.random() * count), (int) (Math.random() * count));
+
+            for (int i = 0; i <= 11; i++)
+                unionFind.makeSet(i);
 
             unionFind.union(0, 1);
             unionFind.union(0, 4);
@@ -84,5 +115,8 @@ public class Main {
         test3(new QuickUnion_Rank_Path_Compression(count));
         test3(new QuickUnion_Rank_Path_Spliting(count));
         test3(new QuickUnion_Rank_Path_Halving(count));
+        test4(new GenerationUnionFind<Integer>());
+
+
     }
 }
