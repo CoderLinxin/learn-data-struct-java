@@ -59,4 +59,29 @@ public interface Graph<V, E> {
      * @param to   边的终点
      */
     void removeEdge(V from, V to);
+
+    /**
+     * 图的广度优先遍历
+     *
+     * @param begin   进行广度优先遍历的起点
+     * @param visitor 顶点访问接口
+     */
+    void breathFirstSearch(V begin, Visitor<V> visitor);
+
+    /**
+     * 图的深度优先遍历
+     *
+     * @param begin   进行深度优先遍历的起点
+     * @param visitor 顶点访问接口
+     */
+    void depthFirstSearch(V begin, Visitor<V> visitor);
+
+    /**
+     * 遍历接口
+     *
+     * @param <V> 顶点数据
+     */
+    interface Visitor<V> {
+        boolean visit(V value); // 返回 true 表示终止遍历
+    }
 }

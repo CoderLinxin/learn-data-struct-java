@@ -161,6 +161,9 @@ public class HashMap<K, V> implements Map<K, V> {
         return new Node<>(key, value, parent);
     }
 
+    /**
+     * 确保哈希表的容量
+     */
     private void resize() {
         if (((this.size + 0.0) / this.table.length) <= LOADING_FACTOR) return; // 判断是否符合扩容界限
 
@@ -498,7 +501,7 @@ public class HashMap<K, V> implements Map<K, V> {
     }
 
     /**
-     * 删除结点后的一些处理
+     * 删除结点后的一些处理(交给子类去实现)
      *
      * @param willRemoveNode 想要删除的结点
      * @param removeNode     实际被删除的结点
@@ -718,7 +721,7 @@ public class HashMap<K, V> implements Map<K, V> {
      * @param <V> 值
      */
     protected static class Node<K, V> {
-        // key 对应的 hashCode (放在这里做到一个缓存的作用，不用每次比较 key 旧计算一个 hashCode)
+        // key 对应的 hashCode (放在这里做到一个缓存的作用，不用每次比较 key 就计算一个 hashCode)
         // 只要映射第一次被添加到哈希表上(生成结点)后，hashCode 就会被缓存起来
         int hash;
         K key;
