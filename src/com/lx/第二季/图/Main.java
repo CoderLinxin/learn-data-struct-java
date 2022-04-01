@@ -4,6 +4,8 @@ import com.lx.第二季.图.model.Data;
 import com.lx.第二季.图.src.Graph;
 import com.lx.第二季.图.src.ListGraph;
 
+import java.util.List;
+
 public class Main {
     static void testBfs() {
         Graph<Object, Double> graph = directedGraph(Data.BFS_04);
@@ -13,12 +15,26 @@ public class Main {
         });
     }
 
-    static void testDfs() {
+    static void testDfs1() {
         Graph<Object, Double> graph = directedGraph(Data.DFS_02);
-        graph.depthFirstSearch("a", (Object v) -> {
+        graph.depthFirstSearchWithRecursion("a", (Object v) -> {
             System.out.println(v);
             return false;
         });
+    }
+
+    static void testDfs2() {
+        Graph<Object, Double> graph = directedGraph(Data.DFS_02);
+        graph.depthFirstSearchWithStack("a", (Object v) -> {
+            System.out.println(v);
+            return false;
+        });
+    }
+
+    static void testTopo() {
+        Graph<Object, Double> graph = directedGraph(Data.TOPO);
+        List<Object> list = graph.topologicalSort();
+        System.out.println(list);
     }
 
     static void test() {
@@ -39,7 +55,11 @@ public class Main {
 
     public static void main(String[] args) {
 //        testBfs();
-        testDfs();
+//        System.out.println();
+//        testDfs1();
+//        System.out.println();
+//        testDfs2();
+        testTopo();
     }
 
     /**

@@ -157,20 +157,25 @@ public class ListGraph<V, E> implements Graph<V, E> {
         }
     }
 
-    /**
-     * 图的广度优先遍历(队列实现)
-     *
-     * @param begin   进行广度优先遍历的起点
-     * @param visitor 开发给外界的遍历接口
-     */
     @Override
     public void breathFirstSearch(V begin, Visitor<V> visitor) {
+        if (visitor == null) return;
+
         Vertex<V, E> beginVertex = this.vertices.get(begin);
         if (beginVertex == null) return;
 
-        // 存放入过队(访问过或将被访问)结点的集合
-        Set<Vertex<V, E>> visited = new HashSet<>();
+        // 进行深度遍历
+        this.breathFirstSearch(beginVertex, visitor, new HashSet<>());
+    }
 
+    /**
+     * 图的广度优先遍历(队列实现)
+     *
+     * @param beginVertex 进行广度优先遍历的起始结点
+     * @param visitor     开发给外界的遍历接口
+     * @param visited     用于存储已经访问过的顶点的集合
+     */
+    private void breathFirstSearch(Vertex<V, E> beginVertex, Visitor<V> visitor, Set<Vertex<V, E>> visited) {
         Queue<Vertex<V, E>> queue = new LinkedList<>();
         queue.offer(beginVertex); // 首先将起点入队
         visited.add(beginVertex); // 标记为访问过
@@ -195,29 +200,25 @@ public class ListGraph<V, E> implements Graph<V, E> {
         }
     }
 
-    /**
-     * 图的深度优先遍历
-     *
-     * @param begin   进行深度优先遍历的起点
-     * @param visitor 顶点访问接口
-     */
     @Override
-    public void depthFirstSearch(V begin, Visitor<V> visitor) {
+    public void depthFirstSearchWithRecursion(V begin, Visitor<V> visitor) {
+        if (visitor == null) return;
+
         Vertex<V, E> beginVertex = this.vertices.get(begin);
         if (beginVertex == null) return;
 
         // 进行深度遍历
-        this.depthFirstSearch(beginVertex, visitor, new HashSet<>());
+        this.depthFirstSearchWithRecursion(beginVertex, visitor, new HashSet<>());
     }
 
     /**
-     * 图的深度优先遍历
+     * 图的深度优先遍历(递归实现)
      *
      * @param beginVertex 进行深度优先遍历的起始顶点
      * @param visitor     顶点访问接口
      * @param visited     用于存储已经访问过的顶点的集合
      */
-    private void depthFirstSearch(Vertex<V, E> beginVertex, Visitor<V> visitor, Set<Vertex<V, E>> visited) {
+    private void depthFirstSearchWithRecursion(Vertex<V, E> beginVertex, Visitor<V> visitor, Set<Vertex<V, E>> visited) {
         visitor.visit(beginVertex.value); // 访问顶点
         visited.add(beginVertex); // 标记为已访问
 
@@ -227,7 +228,99 @@ public class ListGraph<V, E> implements Graph<V, E> {
 
             // 如果顶点没被访问过则对每个顶点进行一次深度遍历
             if (!visited.contains(nextVertex))
-                depthFirstSearch(nextVertex, visitor, visited);
+                depthFirstSearchWithRecursion(nextVertex, visitor, visited);
+        }
+    }
+
+    @Override
+    public void depthFirstSearchWithStack(V begin, Visitor<V> visitor) {
+        if (visitor == null) return;
+
+        Vertex<V, E> beginVertex = this.vertices.get(begin);
+        if (beginVertex == null) return;
+
+        // 进行深度遍历
+        this.depthFirstSearchWithStack(beginVertex, visitor, new HashSet<>());
+    }
+
+    /**
+     * 有向无环图图的拓扑排序
+     *
+     * @return 拓扑排序序列
+     */
+    @Override
+    public List<V> topologicalSort() {
+        Queue<Vertex<V, E>> queue = new LinkedList<>(); // 存放每一轮拓扑排序过程中度为 0 的顶点
+        Map<Vertex<V, E>, Integer> map = new HashMap<>(); // 记录图中各顶点的入度数
+        List<V> list = new ArrayList<V>(); // 存放最终的拓扑排序序列
+
+        this.vertices.forEach((V value, Vertex<V, E> vertex) -> {
+            int inEdgeSize = vertex.inEdges.size();
+
+            if (inEdgeSize == 0)
+                queue.offer(vertex); // 入度边数为 0 的顶点入队
+            else
+                map.put(vertex, inEdgeSize); // 入度边数不为 0 的顶点使用 map 保存并记录其入度边的数量
+        });
+
+        Vertex<V, E> workVertex;
+
+        while (!queue.isEmpty()) {
+            workVertex = queue.poll(); // 出队一个元素
+            list.add(workVertex.value); // 输出到拓扑排序序列
+
+            // 遍历出队元素的所有出度边的终点(模拟在图中删除该出队元素)
+            workVertex.outEdges.forEach((Edge<V, E> outEdge) -> {
+                Vertex<V, E> toVertex = outEdge.to;  // 获取出度边的终点
+                int inSize = map.get(toVertex); // 获取 map 中记录的终点的入度边个数
+
+                if (--inSize == 0) // 因 '删除' 出队元素导致终点的入度边个数变为 0,则将该终点入队
+                    queue.offer(toVertex);
+                else // 否则仅更新终点对应的入度边数量
+                    map.put(toVertex, inSize);
+            });
+        }
+
+        return list;
+    }
+
+    /**
+     * 图的深度优先遍历(栈实现)
+     *
+     * @param beginVertex 进行深度优先遍历的起始结点
+     * @param visitor     顶点访问接口
+     * @param visited     用于存储已经访问过的顶点的集合
+     */
+    public void depthFirstSearchWithStack(Vertex<V, E> beginVertex, Visitor<V> visitor, Set<Vertex<V, E>> visited) {
+        Stack<Vertex<V, E>> stack = new Stack<>();
+
+        /* 1.首先对起点进行访问并入栈 */
+        stack.push(beginVertex);
+        if (visitor.visit(beginVertex.value)) return; // 标记为访问过
+        visited.add(beginVertex);
+
+        Vertex<V, E> backOffVertex; // 标记深度遍历过程中回退所经过的顶点
+        Vertex<V, E> forwardVertex; // 标记深度遍历过程中下一个目标顶点
+
+        while (!stack.isEmpty()) {
+            // 弹出栈顶元素
+            backOffVertex = stack.pop();
+
+            // 挑选符合条件的出度边
+            for (Edge<V, E> edge : backOffVertex.outEdges) {
+                forwardVertex = edge.to;
+
+                // 选取一条未访问过的出度边
+                if (!visited.contains(forwardVertex)) {
+                    stack.push(edge.from); // 出度边的起点入栈
+                    stack.push(forwardVertex); // 出度边的终点入栈
+                    if (visitor.visit(forwardVertex.value)) return; // 访问
+                    visited.add(forwardVertex); // 标记未已访问
+
+                    // 一旦选取了一条出度边，就需要取消其他同级出度边的遍历(沿着一条路一直走下去)
+                    break;
+                }
+            }
         }
     }
 

@@ -1,5 +1,7 @@
 package com.lx.第二季.图.src;
 
+import java.util.List;
+
 /**
  * 图的公共接口
  *
@@ -69,12 +71,27 @@ public interface Graph<V, E> {
     void breathFirstSearch(V begin, Visitor<V> visitor);
 
     /**
-     * 图的深度优先遍历
+     * 图的深度优先遍历(递归实现)
      *
      * @param begin   进行深度优先遍历的起点
      * @param visitor 顶点访问接口
      */
-    void depthFirstSearch(V begin, Visitor<V> visitor);
+    void depthFirstSearchWithRecursion(V begin, Visitor<V> visitor);
+
+    /**
+     * 图的深度优先遍历(栈实现)
+     *
+     * @param begin   进行深度优先遍历的起点
+     * @param visitor 顶点访问接口
+     */
+    void depthFirstSearchWithStack(V begin, Visitor<V> visitor);
+
+    /**
+     * 图的拓扑排序(前提:图必须是一个有向无环图)
+     *
+     * @return 拓扑排序序列
+     */
+    List<V> topologicalSort();
 
     /**
      * 遍历接口
