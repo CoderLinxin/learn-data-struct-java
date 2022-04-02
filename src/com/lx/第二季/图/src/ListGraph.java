@@ -1,5 +1,8 @@
 package com.lx.第二季.图.src;
 
+import com.lx.第一季.堆.src.BinaryHeap;
+import com.lx.第二季.并查集.src.GenerationUnionFind;
+
 import java.util.*;
 
 /**
@@ -10,7 +13,20 @@ import java.util.*;
  * @param <V> 结点存储的数据类型
  * @param <E> 边的权重类型
  */
-public class ListGraph<V, E> implements Graph<V, E> {
+public class ListGraph<V, E> extends Graph<V, E> {
+    public ListGraph() {
+        super();
+    }
+
+    /**
+     * 用户如果需要使用到最小生成树算法和最短路径算法就需要使用此构造函数定义权值操作相关规则
+     *
+     * @param weightManager 用于定义权值操作相关接口
+     */
+    public ListGraph(WeightManager<E> weightManager) {
+        super(weightManager);
+    }
+
     // 记录图的所有顶点
     // 为什么使用 map?
     //  1.因为 Vertex 不对外开放,因此外界肯定传入的是顶点的 value,我们需要根据该 value 找到其(映射)对应的 Vertex
@@ -325,6 +341,102 @@ public class ListGraph<V, E> implements Graph<V, E> {
     }
 
     /**
+     * 普里姆算法构造最小生成树(前提:图结构是一个有向无环图)
+     * 设 G = (V, E) 是有权的无向连通图，A 是最小生成树的边集
+     * 算法从 S = { u0 } ((u0)∈V), A = {} 开始, 重复执行下述操作,直到 A.size() == 顶点数-1
+     * 找到切分 C = (S, V-S) 的最小横切边 (u0, v0) (u0∈S, v0∈(V-S))并入集合 A, 同时将 v0 并入集合 A
+     * 最坏时间复杂度(以本案例邻接表的实现而言的): O(ElogE),E 为图的边数
+     * 普里姆算法的时间复杂度可能随着使用的堆的不同而不同
+     *
+     * @return 最小生成树的边集合
+     */
+    @Override
+    public Set<EdgeInfo<V, E>> mstWithPrim() {
+        int maxEdgeSize = this.vertices.size() - 1; // 最小生成树应具有的边数
+        if (maxEdgeSize <= 0) return null; // 只有一个顶点无法构成生成树
+
+        Set<Vertex<V, E>> visitedVertices = new HashSet<>(); // 集合 S
+        Set<EdgeInfo<V, E>> mstEdges = new HashSet<>(); // 存放最小生成树的边集
+
+        // 首先随机选取一个顶点 u0 作为集合 S 的元素(表示从顶点 u0 开始构造最小生成树)
+        Vertex<V, E> beginVertex = this.vertices.values().iterator().next();
+        visitedVertices.add(beginVertex);
+
+        // 将 beginVertex 的所有出度边(由于最小生成树针对的是无向图,因此操作出度边、入度边都可以)塞入一个最小堆
+        // 后续利用最小堆来挑选权值最小的边(注意用户需要自定义 weightManager 中 compare 设置最小堆比较规则)
+        BinaryHeap<Edge<V, E>> minHeap = new BinaryHeap<>(this.edgeComparator, beginVertex.outEdges);
+
+        Edge<V, E> minEdge;
+        Vertex<V, E> minEdgeTo;
+
+        while (!minHeap.isEmpty() && mstEdges.size() < maxEdgeSize) { // 最坏情况下堆为空且图中所有边都加入了堆中, O(E)
+            minEdge = minHeap.remove(); // 移除顶部元素(获取权值最小的边) O(logE)
+            minEdgeTo = minEdge.to;
+
+            // 注意1:判断该边是否指向集合 S 的外部(是否是横切边),此判断需要放在这里(在顶点移除的边加入最终的最小生成树边集合前进行)
+            // 而不应该放在下面集合 S 新加入的顶点所有出度边放入最小堆中这个操作前(当前现在可以额外加上这个条件(不过没必要))
+            if (!visitedVertices.contains(minEdgeTo)) {
+                mstEdges.add(minEdge.getEdgeInfo()); // 将边信息添加到最小生成树边集合中,O(1)
+                visitedVertices.add(minEdgeTo); // 将挑选的边的终点加入集合 S 中,O(1)
+
+                // 注意2:这里仅需将新加入集合 S 的新顶点所有出度边加入最小堆中,不需要将集合 S 所有顶点的出度边都加入最小堆
+                // (因为最小堆中仍然存在集合 S 中其他顶点的出度边)
+                for (Edge<V, E> outEdge : minEdgeTo.outEdges)
+                    // 这里也可以额外加上判断 outEdge 的终点是否在集合 S 中
+                    minHeap.add(outEdge); // O(logE)
+            }
+        }
+
+        return mstEdges;
+    }
+
+    /**
+     * 克鲁斯卡尔算法构造最小生成树(前提:图结构是一个有向无环图)
+     * 最坏时间复杂度(以本案例邻接表的实现而言的):O(E) + O(V) + O(ElogE) = O(ElogE), E为图的边数,V为顶点数
+     * 由于 V 受 E 影响,因此可以去掉 O(V),(V 不算另一个单独的变量)
+     *
+     * @return 最小生成树的边集合
+     */
+    @Override
+    public Set<EdgeInfo<V, E>> mstWithKruskal() {
+        int maxEdgeSize = this.vertices.size() - 1; // 最小生成树应具有的边数
+        if (maxEdgeSize <= 0) return null; // 只有一个顶点无法构成生成树
+
+        // 根据图的所有边建一个小根堆(用于取前 Top K 条边), 批量建堆的时间复杂度是 O(E)
+        BinaryHeap<Edge<V, E>> heap = new BinaryHeap<>(this.edgeComparator, this.edges);
+        // 存放最小生成树的边集
+        Set<EdgeInfo<V, E>> mstEdges = new HashSet<>();
+
+        // 使用并查集处理环问题
+        GenerationUnionFind<Vertex<V, E>> unionFind = new GenerationUnionFind<>();
+        // 图中所有顶点(使用顶点或顶点值构成集合都一样)初始化为并查集中的一个集合
+        this.vertices.forEach((V value, Vertex<V, E> vertex) -> { // O(V)
+            unionFind.makeSet(vertex);
+        });
+
+        Edge<V, E> minEdge;
+
+        while (!heap.isEmpty() && mstEdges.size() < maxEdgeSize) { // 最坏情况下直到堆为空 O(E)
+            minEdge = heap.remove(); // 取出权值最小的边 O(logE)
+
+            // 如果 from、to 不属于同一个集合则可以选择该边
+            if (!unionFind.isSame(minEdge.from, minEdge.to)) { // 由于并查集优化到 O(α(n)<5) = O(1)
+                unionFind.union(minEdge.from, minEdge.to); // 将 from、to 所属的两个集合并起来
+                mstEdges.add(minEdge.getEdgeInfo()); // 将边加入最小生成树边集中
+            }
+        }
+
+        return mstEdges;
+    }
+
+    /**
+     * 边比较接口(用于最小生成树算法中比较两边的权值)
+     */
+    private final Comparator<Edge<V, E>> edgeComparator = (Edge<V, E> edge1, Edge<V, E> edge2) -> {
+        return -weightManager.compare(edge1.weight, edge2.weight);
+    };
+
+    /**
      * 图的顶点数据类型(不对外开放)
      *
      * @param <V> 顶点存储的数据(注意由于所有顶点采用 map 来存储,用户传入的 value 为自定义对象时建议重写 equals 和 hashCode 方法)
@@ -398,6 +510,15 @@ public class ListGraph<V, E> implements Graph<V, E> {
         @Override
         public int hashCode() {
             return Objects.hash(from, to);
+        }
+
+        /**
+         * 用于获取提供给用户的 edgeInfo 实例
+         *
+         * @return edgeInfo 实例
+         */
+        private EdgeInfo<V, E> getEdgeInfo() {
+            return new EdgeInfo<>(this.from.value, this.to.value, this.weight);
         }
 
         /* 测试相关 */

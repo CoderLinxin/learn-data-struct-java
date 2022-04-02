@@ -1,8 +1,11 @@
 package com.lx.第一季.堆.src;
 
 import com.lx.第一季.树.printer.BinaryTreeInfo;
+import com.lx.第二季.图.src.ListGraph;
 
+import java.util.Collection;
 import java.util.Comparator;
+import java.util.Set;
 
 /**
  * 实现一个大根堆(数组实现)(将 compare 的结果取反或通过传递 comparator 配置比较规则后就是小顶堆)
@@ -15,8 +18,27 @@ public class BinaryHeap<E> extends AbstractHeap<E> implements BinaryTreeInfo {
 
     /**
      * @param comparator 比较接口
-     * @param elements   待堆化的数组
+     * @param elements   待堆化的数组(可以传入数组、集合等...)(Collection 是 ArrayList、Set 等的父类)
      */
+    public BinaryHeap(Comparator<E> comparator, Collection<E> elements) {
+        super(comparator);
+
+        if (elements == null || elements.size() == 0) {
+            this.elements = (E[]) new Object[DEFAULT_CAPACITY];
+        } else {
+            this.size = elements.size();
+            int capacity = Math.max(elements.size(), DEFAULT_CAPACITY);
+            this.elements = (E[]) new Object[capacity];
+            int i = 0;
+            for (E element : elements) { // 对数据源进行深拷贝(这里的数据总是一层的)
+                this.elements[i++] = element;
+            }
+
+            // 堆化
+            this.downTopHeapify();
+        }
+    }
+
     public BinaryHeap(Comparator<E> comparator, E[] elements) {
         super(comparator);
 
@@ -26,12 +48,27 @@ public class BinaryHeap<E> extends AbstractHeap<E> implements BinaryTreeInfo {
             this.size = elements.length;
             int capacity = Math.max(elements.length, DEFAULT_CAPACITY);
             this.elements = (E[]) new Object[capacity];
-            for (int i = 0; i < this.size; i++) // 对数据源进行深拷贝(这里的数据总是一层的)
-                this.elements[i] = elements[i];
+            int i = 0;
+            for (E element : elements) { // 对数据源进行深拷贝(这里的数据总是一层的)
+                this.elements[i++] = element;
+            }
 
             // 堆化
             this.downTopHeapify();
         }
+    }
+
+    public BinaryHeap(E[] elements) {
+        this(null, elements);
+    }
+
+    public BinaryHeap() {
+        this.elements = (E[]) new Object[DEFAULT_CAPACITY];
+    }
+
+    public BinaryHeap(Comparator<E> comparator) {
+        this.comparator = comparator;
+        this.elements = (E[]) new Object[DEFAULT_CAPACITY];
     }
 
     /**
@@ -50,18 +87,6 @@ public class BinaryHeap<E> extends AbstractHeap<E> implements BinaryTreeInfo {
         // 从最后非叶子结点开始下滤
         for (int i = (this.size >> 1) - 1; i >= 0; i--)
             this.shiftDown(i);
-    }
-
-    public BinaryHeap(E[] elements) {
-        this(null, elements);
-    }
-
-    public BinaryHeap() {
-        this(null, null);
-    }
-
-    public BinaryHeap(Comparator<E> comparator) {
-        this(comparator, null);
     }
 
     /**

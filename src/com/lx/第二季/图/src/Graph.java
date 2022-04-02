@@ -1,6 +1,7 @@
 package com.lx.第二季.图.src;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * 图的公共接口
@@ -8,27 +9,38 @@ import java.util.List;
  * @param <V> 结点存储的数据类型
  * @param <E> 边的权值类型
  */
-public interface Graph<V, E> {
+public abstract class Graph<V, E> {
+    // 用户可通过传递此实例来自定义权值操作的相关接口
+    public WeightManager<E> weightManager;
+
+    public Graph() {
+        this(null);
+    }
+
+    public Graph(WeightManager<E> weightManager) {
+        this.weightManager = weightManager;
+    }
+
     /**
      * 返回图的总边数
      *
      * @return 总边数
      */
-    int edgeSize();
+    public abstract int edgeSize();
 
     /**
      * 返回图的总结点数量
      *
      * @return 结点数量
      */
-    int verticesSize();
+    public abstract int verticesSize();
 
     /**
      * 添加一个结点
      *
      * @param value 顶点存储的数据
      */
-    void addVertex(V value);
+    public abstract void addVertex(V value);
 
     /**
      * 添加一条边
@@ -36,7 +48,7 @@ public interface Graph<V, E> {
      * @param from 边的起点
      * @param to   边的终点
      */
-    void addEdge(V from, V to);
+    public abstract void addEdge(V from, V to);
 
     /**
      * 添加一条边
@@ -45,14 +57,14 @@ public interface Graph<V, E> {
      * @param to     边的终点
      * @param weight 边的权值
      */
-    void addEdge(V from, V to, E weight);
+    public abstract void addEdge(V from, V to, E weight);
 
     /**
      * 由于图的结点不对外开放，且用户明确知道自己删除的是哪个 value，因此删除结点接口不返回被删除的顶点数据
      *
      * @param value 结点存储的数据类型
      */
-    void removeVertex(V value);
+    public abstract void removeVertex(V value);
 
     /**
      * 删除边
@@ -60,7 +72,7 @@ public interface Graph<V, E> {
      * @param from 边的起点
      * @param to   边的终点
      */
-    void removeEdge(V from, V to);
+    public abstract void removeEdge(V from, V to);
 
     /**
      * 图的广度优先遍历
@@ -68,7 +80,7 @@ public interface Graph<V, E> {
      * @param begin   进行广度优先遍历的起点
      * @param visitor 顶点访问接口
      */
-    void breathFirstSearch(V begin, Visitor<V> visitor);
+    public abstract void breathFirstSearch(V begin, Visitor<V> visitor);
 
     /**
      * 图的深度优先遍历(递归实现)
@@ -76,7 +88,7 @@ public interface Graph<V, E> {
      * @param begin   进行深度优先遍历的起点
      * @param visitor 顶点访问接口
      */
-    void depthFirstSearchWithRecursion(V begin, Visitor<V> visitor);
+    public abstract void depthFirstSearchWithRecursion(V begin, Visitor<V> visitor);
 
     /**
      * 图的深度优先遍历(栈实现)
@@ -84,21 +96,97 @@ public interface Graph<V, E> {
      * @param begin   进行深度优先遍历的起点
      * @param visitor 顶点访问接口
      */
-    void depthFirstSearchWithStack(V begin, Visitor<V> visitor);
+    public abstract void depthFirstSearchWithStack(V begin, Visitor<V> visitor);
 
     /**
      * 图的拓扑排序(前提:图必须是一个有向无环图)
      *
      * @return 拓扑排序序列
      */
-    List<V> topologicalSort();
+    public abstract List<V> topologicalSort();
+
+    /**
+     * 普里姆算法构造最小生成树
+     *
+     * @return 最小生成树边的集合
+     */
+    public abstract Set<EdgeInfo<V, E>> mstWithPrim();
+
+    /**
+     * 克鲁斯卡尔算法构造最小生成树
+     *
+     * @return 最小生成树边的集合
+     */
+    public abstract Set<EdgeInfo<V, E>> mstWithKruskal();
 
     /**
      * 遍历接口
      *
      * @param <V> 顶点数据
      */
-    interface Visitor<V> {
+    public interface Visitor<V> {
         boolean visit(V value); // 返回 true 表示终止遍历
+    }
+
+    /**
+     * 用于暴露给用户的边的数据类型(用于构造最小生成树中提供给用户的边)
+     *
+     * @param <V> 顶点数据
+     * @param <E> 权重
+     */
+    public static class EdgeInfo<V, E> {
+        private V from;
+        private V to;
+        private E weight;
+
+        public EdgeInfo(V from, V to, E weight) {
+            this.from = from;
+            this.to = to;
+            this.weight = weight;
+        }
+
+        public V getFrom() {
+            return from;
+        }
+
+        public void setFrom(V from) {
+            this.from = from;
+        }
+
+        public V getTo() {
+            return to;
+        }
+
+        public void setTo(V to) {
+            this.to = to;
+        }
+
+        public E getWeight() {
+            return weight;
+        }
+
+        public void setWeight(E weight) {
+            this.weight = weight;
+        }
+
+        @Override
+        public String toString() {
+            return "EdgeInfo{" +
+                    "from=" + from +
+                    ", to=" + to +
+                    ", weight=" + weight +
+                    '}';
+        }
+    }
+
+    /**
+     * 用于定义一系列操作权值方法的类
+     *
+     * @param <E> 权值类型
+     */
+    public interface WeightManager<E> {
+        int compare(E w1, E w2); // 用于最小生成树算法中挑选最小权值的边时用于比较权值时用到
+
+        E add(E w1, E w2); // 用于最小路径算法中计算路径权值之和时用到
     }
 }
