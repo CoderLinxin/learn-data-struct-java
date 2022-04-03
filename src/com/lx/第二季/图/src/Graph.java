@@ -1,6 +1,8 @@
 package com.lx.第二季.图.src;
 
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -110,14 +112,51 @@ public abstract class Graph<V, E> {
      *
      * @return 最小生成树边的集合
      */
-    public abstract Set<EdgeInfo<V, E>> mstWithPrim();
+    public abstract Set<EdgeInfo<V, E>> getMstWithPrim();
 
     /**
      * 克鲁斯卡尔算法构造最小生成树
      *
      * @return 最小生成树边的集合
      */
-    public abstract Set<EdgeInfo<V, E>> mstWithKruskal();
+    public abstract Set<EdgeInfo<V, E>> getMstWithKruskal();
+
+    /**
+     * 求单源最短路径的迪杰斯特拉算法(简单版)
+     *
+     * @param begin 需要求最短路径的源点的 value
+     * @return 源点到其他所有顶点的最短路径的权值
+     */
+    public abstract Map<V, E> dijkstraSimpleVersion(V begin);
+
+    /**
+     * 求单源最短路径的迪杰斯特拉算法(完整版)
+     *
+     * @param begin 需要求最短路径的源点的 value
+     * @return 源点到其他所有顶点的最短路径的权值和最短路径所经过的结点信息
+     */
+    public abstract Map<V, FullPathInfo<V, E>> dijkstraFullVersion(V begin);
+
+    /**
+     * 最短路径算法中返回的完整路径信息类型
+     *
+     * @param <V> 顶点的 value 类型
+     * @param <E> 边的权值类型
+     */
+    public static class FullPathInfo<V, E> {
+        // 路径的总权重
+        public E weight;
+        // 路径包含的所有边信息的列表(由于这些边是有序的且数量不确定,因此使用 LinkedList)
+        List<EdgeInfo<V, E>> edgeInfos = new LinkedList<>();
+
+        @Override
+        public String toString() {
+            return "FullPathInfo{" +
+                    "weight=" + weight +
+                    ", edgeInfos=" + edgeInfos +
+                    '}';
+        }
+    }
 
     /**
      * 遍历接口
@@ -185,7 +224,11 @@ public abstract class Graph<V, E> {
      * @param <E> 权值类型
      */
     public interface WeightManager<E> {
-        int compare(E w1, E w2); // 用于最小生成树算法中挑选最小权值的边时用于比较权值时用到
+        // 用于最小生成树算法中挑选最小权值的边时用于比较权值时用到
+        // >0: w1>w2
+        // <0: w1<w2
+        // =0: w1==w2
+        int compare(E w1, E w2);
 
         E add(E w1, E w2); // 用于最小路径算法中计算路径权值之和时用到
     }

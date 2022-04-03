@@ -2,10 +2,12 @@ package com.lx.第二季.图;
 
 import com.lx.第二季.图.model.Data;
 import com.lx.第二季.图.src.Graph;
+import com.lx.第二季.图.src.Graph.FullPathInfo;
 import com.lx.第二季.图.src.Graph.WeightManager;
 import com.lx.第二季.图.src.ListGraph;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public class Main {
@@ -45,7 +47,7 @@ public class Main {
 
     static void testMst1() {
         Graph<Object, Double> graph = undirectedGraph(Data.MST_01);
-        Set<Graph.EdgeInfo<Object, Double>> infos = graph.mstWithPrim();
+        Set<Graph.EdgeInfo<Object, Double>> infos = graph.getMstWithPrim();
         for (Graph.EdgeInfo<Object, Double> info : infos) {
             System.out.println(info);
         }
@@ -53,7 +55,7 @@ public class Main {
 
     static void testMst2() {
         Graph<Object, Double> graph = undirectedGraph(Data.MST_01);
-        Set<Graph.EdgeInfo<Object, Double>> infos = graph.mstWithKruskal();
+        Set<Graph.EdgeInfo<Object, Double>> infos = graph.getMstWithKruskal();
         for (Graph.EdgeInfo<Object, Double> info : infos) {
             System.out.println(info);
         }
@@ -63,6 +65,24 @@ public class Main {
         Graph<Object, Double> graph = directedGraph(Data.TOPO);
         List<Object> list = graph.topologicalSort();
         System.out.println(list);
+    }
+
+    static void testSp() {
+        Graph<Object, Double> graph = undirectedGraph(Data.SP);
+        Map<Object, Double> sp = graph.dijkstraSimpleVersion("A");
+        if (sp == null) return;
+        sp.forEach((Object v, Double weight) -> {
+            System.out.println(v + " - " + weight);
+        });
+    }
+
+    static void testSp2() {
+        Graph<Object, Double> graph = undirectedGraph(Data.SP);
+        Map<Object, FullPathInfo<Object, Double>> sp = graph.dijkstraFullVersion("A");
+        if (sp == null) return;
+        sp.forEach((Object v, FullPathInfo<Object, Double> fullPathInfo) -> {
+            System.out.println(v + " - " + fullPathInfo);
+        });
     }
 
     static void test() {
@@ -88,9 +108,11 @@ public class Main {
 //        System.out.println();
 //        testDfs2();
 //        testTopo();
-        testMst1();
-        System.out.println();
-        testMst2();
+//        testMst1();
+//        System.out.println();
+//        testMst2();
+        testSp();
+        testSp2();
     }
 
     /**

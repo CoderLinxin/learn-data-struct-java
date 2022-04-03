@@ -4,6 +4,7 @@ import com.lx.第一季.堆.src.BinaryHeap;
 import com.lx.第二季.并查集.src.GenerationUnionFind;
 
 import java.util.*;
+import java.util.Map.Entry;
 
 /**
  * 有向网的邻接表实现
@@ -351,7 +352,7 @@ public class ListGraph<V, E> extends Graph<V, E> {
      * @return 最小生成树的边集合
      */
     @Override
-    public Set<EdgeInfo<V, E>> mstWithPrim() {
+    public Set<EdgeInfo<V, E>> getMstWithPrim() {
         int maxEdgeSize = this.vertices.size() - 1; // 最小生成树应具有的边数
         if (maxEdgeSize <= 0) return null; // 只有一个顶点无法构成生成树
 
@@ -398,7 +399,7 @@ public class ListGraph<V, E> extends Graph<V, E> {
      * @return 最小生成树的边集合
      */
     @Override
-    public Set<EdgeInfo<V, E>> mstWithKruskal() {
+    public Set<EdgeInfo<V, E>> getMstWithKruskal() {
         int maxEdgeSize = this.vertices.size() - 1; // 最小生成树应具有的边数
         if (maxEdgeSize <= 0) return null; // 只有一个顶点无法构成生成树
 
@@ -427,6 +428,208 @@ public class ListGraph<V, E> extends Graph<V, E> {
         }
 
         return mstEdges;
+    }
+
+    /**
+     * 求单源最短路径的迪杰斯特拉算法(简单版)
+     *
+     * @param begin 需要求最短路径的源点的 value
+     * @return {顶点1:源点到顶点1的最短路径的权值, 顶点2:源点到顶点2的最短路径的权值, ...}
+     */
+    @Override
+    public Map<V, E> dijkstraSimpleVersion(V begin) {
+        Vertex<V, E> beginVertex = this.vertices.get(begin); // 获取源点
+        if (beginVertex == null) return null;
+
+        // 存储最终源点到其他顶点的正确的最短路径
+        Map<V, E> selectedPaths = new HashMap<>();
+        // 存储迭代过程中源点到其他顶点的最短路径 {顶点: 源点到顶点的最短路径权值}
+        Map<Vertex<V, E>, E> unSelectedPaths = new HashMap<>();
+
+        // 初始化 unSelectedPath，这里没有添加无法直接到达的顶点的最短路径，
+        // 就相当于后续以该顶点为 key 拿到的是 null,在下面判断时以拿到 null 来表示 ∞
+        beginVertex.outEdges.forEach((Edge<V, E> edge) -> {
+            unSelectedPaths.put(edge.to, edge.weight);
+        });
+
+        Entry<Vertex<V, E>, E> minPath;
+        Vertex<V, E> minEndVertex;
+        E minWeight;
+
+        Vertex<V, E> endVertex;
+        E oldWeight;
+        E newWeight;
+
+        while (!unSelectedPaths.isEmpty()) {
+            minPath = this.getMinPath1(unSelectedPaths); // 从 unSelectedPath 挑选一条最短路径
+            minEndVertex = minPath.getKey(); // 获取挑选的最短路径的终点
+            minWeight = minPath.getValue(); // 获取挑选的最短路径的权值
+
+            selectedPaths.put(minEndVertex.value, minWeight); // selectedPath 中添加选择的最短路径
+            unSelectedPaths.remove(minEndVertex); // unSelectedPath 中移除选择的最短路径
+
+            // 对挑选的最短路径的终点的所有出度边执行松弛操作
+            for (Edge<V, E> edge : minEndVertex.outEdges) {
+                endVertex = edge.to; // 挑选的最短路径终点出度边的终点
+
+                // 出度边终点指向 selectedPath 中已选择路径的终点或指向源点则跳过
+                if (selectedPaths.containsKey(endVertex.value) || endVertex.equals(beginVertex))
+                    continue;
+
+                // unSelectedPath 获取源点到 endVertex 的旧的最短路径
+                oldWeight = unSelectedPaths.get(endVertex);
+                // 因 minEndVertex 的连通而得到源点到 endVertex 新的最短路径:
+                // (源点到 minEndVertex 的最短路径 + 边 minEndVertex -> endVertex 的权值)
+                newWeight = this.weightManager.add(minWeight, edge.weight);
+
+                // 试图更新 unSelectedPath 中的最短路径
+                // unSelectedPath.get(endVertex) == null 表示原先 unSelectedPath 中该最短路径的权值为 ∞,因此直接更新即可
+                if (unSelectedPaths.get(endVertex) == null
+                        || this.weightManager.compare(newWeight, oldWeight) < 0)
+                    unSelectedPaths.put(endVertex, newWeight);
+            }
+        }
+
+        return selectedPaths;
+    }
+
+    /**
+     * 从 unSelectedPath 中选出最短路径(不使用最小堆是因为最小堆采用的整数索引要与 map 的 key 关联起来比较麻烦,要使用索引堆)
+     *
+     * @param unSelectedPaths {终点1: 最短路径权值1, 终点2: 最短路径权值2, ...}
+     * @return {最短路径的终点: 最短路径的权值}
+     */
+    private Entry<Vertex<V, E>, E> getMinPath1(Map<Vertex<V, E>, E> unSelectedPaths) {
+        Iterator<Entry<Vertex<V, E>, E>> it = unSelectedPaths.entrySet().iterator();
+        Entry<Vertex<V, E>, E> minPath = it.next();
+
+        Entry<Vertex<V, E>, E> workEntry;
+
+        while (it.hasNext()) {
+            workEntry = it.next();
+            if (this.weightManager.compare(workEntry.getValue(), minPath.getValue()) < 0)
+                minPath = workEntry;
+        }
+
+        return minPath;
+    }
+
+    /**
+     * 求单源最短路径的迪杰斯特拉算法(完整版)
+     *
+     * @param begin 需要求最短路径的源点的 value
+     * @return {顶点1:源点到顶点1的最短路径的完整信息(包含路径的总权值和路径上的所有边信息), 顶点2:源点到顶点2的最短路径的完整信息, ...}
+     */
+    @Override
+    public Map<V, FullPathInfo<V, E>> dijkstraFullVersion(V begin) {
+        Vertex<V, E> beginVertex = this.vertices.get(begin); // 获取源点
+        if (beginVertex == null) return null;
+
+        // 存储最终源点到其他顶点的正确的最短路径
+        Map<V, FullPathInfo<V, E>> selectedPaths = new HashMap<>();
+        // 存储迭代过程中源点到其他顶点的最短路径 {顶点: 源点到顶点的最短路径的完整信息}
+        Map<Vertex<V, E>, FullPathInfo<V, E>> unSelectedPaths = new HashMap<>();
+
+        // 初始化 unSelectedPath，这里没有添加无法直接到达的顶点的最短路径，
+        // 就相当于后续以该顶点为 key 拿到的是 null,在下面判断时以拿到 null 来表示 ∞
+        beginVertex.outEdges.forEach((Edge<V, E> edge) -> {
+            // 获取出度边的完整路径信息
+            FullPathInfo<V, E> fullPathInfo = new FullPathInfo<>();
+            fullPathInfo.weight = edge.weight;
+            fullPathInfo.edgeInfos.add(edge.getEdgeInfo());
+
+            unSelectedPaths.put(edge.to, fullPathInfo);
+        });
+
+        Entry<Vertex<V, E>, FullPathInfo<V, E>> minPath;
+        Vertex<V, E> minEndVertex;
+        FullPathInfo<V, E> minPathInfo;
+
+        Vertex<V, E> endVertex;
+
+        while (!unSelectedPaths.isEmpty()) {
+            minPath = this.getMinPath2(unSelectedPaths); // 从 unSelectedPath 挑选一条最短路径
+            minEndVertex = minPath.getKey(); // 获取挑选的最短路径的终点
+            minPathInfo = minPath.getValue(); // 获取挑选的最短路径的完整信息
+
+            selectedPaths.put(minEndVertex.value, minPathInfo); // selectedPath 中添加选择的最短路径
+            unSelectedPaths.remove(minEndVertex); // unSelectedPath 中移除选择的最短路径
+
+            // 迭代挑选的最短路径的终点的所有出度边
+            for (Edge<V, E> edge : minEndVertex.outEdges) {
+                endVertex = edge.to; // 挑选的最短路径终点出度边的终点
+
+                // (如果是无向图)出度边终点指向 selectedPath 中已选择路径的终点或指向源点则跳过
+                if (selectedPaths.containsKey(endVertex.value) || endVertex.equals(beginVertex))
+                    continue;
+
+                // 对 minPath 的终点 minEndVertex 的所有出度边 edge 执行松弛操作
+                this.relax(unSelectedPaths, minPath, edge);
+            }
+        }
+
+        return selectedPaths;
+    }
+
+    /**
+     * 对边 edge 执行松弛操作，试图更新源点到 edge.to 的最短路径
+     *
+     * @param unSelectedPaths 尚未确定的最短路径集
+     * @param fromMinPath 已经确定的源点到 edge.from 的最短路径
+     * @param edge 需执行松弛操作的边
+     */
+    private void relax(
+            Map<Vertex<V, E>, FullPathInfo<V, E>> unSelectedPaths,
+            Entry<Vertex<V, E>, FullPathInfo<V, E>> fromMinPath,
+            Edge<V, E> edge
+    ) {
+        // unSelectedPath 获取源点到 edge.to 的旧的最短路径
+        FullPathInfo<V, E> oldMinPath = unSelectedPaths.get(edge.to);
+
+        // 因 edge.from 的连通而得到源点到 edge.to 的新路径的权值:
+        // (源点到 edge.from 的最短路径的权值 + 边 edge 的权值)
+        E newWeight = this.weightManager.add(fromMinPath.getValue().weight, edge.weight);
+
+        /* 试图更新 unSelectedPath 中的最短路径 */
+
+        // 如果旧路径存在且新路径比旧路径长则跳过
+        if (oldMinPath != null && this.weightManager.compare(newWeight, oldMinPath.weight) > 0)
+            return;
+
+        // oldMinPath == null 表示原先 unSelectedPath 中源点到 edge.to 的最短路径没有找到,因此需要创建一条出来
+        if (oldMinPath == null) {
+            oldMinPath = new FullPathInfo<>();
+            unSelectedPaths.put(edge.to, oldMinPath);
+        } else {
+            // 将源点到 edge.to 的旧的最短路径清空
+            oldMinPath.edgeInfos.clear();
+        }
+
+        // 添加新找到的从源点到 edge.to 的最短路径
+        oldMinPath.edgeInfos.addAll(fromMinPath.getValue().edgeInfos); // 首先添加源点到 edge.from 的最短路径
+        oldMinPath.edgeInfos.add(edge.getEdgeInfo()); // 接着添加路径: edge.from -> edge.to
+        oldMinPath.weight = newWeight; // 更新 源点 -> edge.to 路径的权值
+    }
+
+    /**
+     * 从 unSelectedPath 中选出一条最短路径
+     *
+     * @param unSelectedPaths {终点1: 最短路径的完整信息, 终点2: 最短路径的完整信息, ...}
+     * @return {最短路径的终点: 最短路径的完整信息}
+     */
+    private Entry<Vertex<V, E>, FullPathInfo<V, E>> getMinPath2(Map<Vertex<V, E>, FullPathInfo<V, E>> unSelectedPaths) {
+        Iterator<Entry<Vertex<V, E>, FullPathInfo<V, E>>> it = unSelectedPaths.entrySet().iterator();
+        Entry<Vertex<V, E>, FullPathInfo<V, E>> minPath = it.next();
+
+        Entry<Vertex<V, E>, FullPathInfo<V, E>> workEntry;
+
+        while (it.hasNext()) {
+            workEntry = it.next();
+            if (this.weightManager.compare(workEntry.getValue().weight, minPath.getValue().weight) < 0)
+                minPath = workEntry;
+        }
+
+        return minPath;
     }
 
     /**
