@@ -19,6 +19,11 @@ public class Main {
         public Double add(Double w1, Double w2) {
             return w1 + w2;
         }
+
+        @Override
+        public Double zero() {
+            return 0.0;
+        }
     };
 
     static void testBfs() {
@@ -85,6 +90,26 @@ public class Main {
         });
     }
 
+    static void testSp3() {
+        Graph<Object, Double> graph = directedGraph(Data.NEGATIVE_WEIGHT1);
+        Map<Object, FullPathInfo<Object, Double>> sp = graph.bellmanFord("A");
+        if (sp == null) return;
+        sp.forEach((Object v, FullPathInfo<Object, Double> fullPathInfo) -> {
+            System.out.println(v + " - " + fullPathInfo);
+        });
+    }
+    static void testMultiSp() {
+        Graph<Object, Double> graph = directedGraph(Data.NEGATIVE_WEIGHT1);
+        Map<Object, Map<Object, FullPathInfo<Object, Double>>> sp = graph.floyd();
+        sp.forEach((Object from, Map<Object, FullPathInfo<Object, Double>> paths) -> {
+            System.out.println(from + "---------------------");
+            paths.forEach((Object to, FullPathInfo<Object, Double> path) -> {
+                System.out.println(to + " - " + path);
+            });
+        });
+    }
+
+
     static void test() {
         ListGraph<String, Integer> listGraph = new ListGraph<>();
         listGraph.addEdge("v0", "v4", 6);
@@ -102,17 +127,21 @@ public class Main {
     }
 
     public static void main(String[] args) {
-//        testBfs();
-//        System.out.println();
-//        testDfs1();
-//        System.out.println();
-//        testDfs2();
-//        testTopo();
-//        testMst1();
-//        System.out.println();
-//        testMst2();
+        testBfs();
+        System.out.println();
+        testDfs1();
+        System.out.println();
+        testDfs2();
+        testTopo();
+        testMst1();
+        System.out.println();
+        testMst2();
         testSp();
+        System.out.println();
         testSp2();
+        System.out.println();
+        testSp3();
+        testMultiSp();
     }
 
     /**

@@ -249,6 +249,12 @@ public class ListGraph<V, E> extends Graph<V, E> {
         }
     }
 
+    /**
+     * 图的深度优先遍历(栈实现)
+     *
+     * @param begin   进行深度优先遍历的起点
+     * @param visitor 顶点访问接口
+     */
     @Override
     public void depthFirstSearchWithStack(V begin, Visitor<V> visitor) {
         if (visitor == null) return;
@@ -258,6 +264,46 @@ public class ListGraph<V, E> extends Graph<V, E> {
 
         // 进行深度遍历
         this.depthFirstSearchWithStack(beginVertex, visitor, new HashSet<>());
+    }
+
+    /**
+     * 图的深度优先遍历(栈实现)
+     *
+     * @param beginVertex 进行深度优先遍历的起始结点
+     * @param visitor     顶点访问接口
+     * @param visited     用于存储已经访问过的顶点的集合
+     */
+    public void depthFirstSearchWithStack(Vertex<V, E> beginVertex, Visitor<V> visitor, Set<Vertex<V, E>> visited) {
+        Stack<Vertex<V, E>> stack = new Stack<>();
+
+        /* 1.首先对起点进行访问并入栈 */
+        stack.push(beginVertex);
+        if (visitor.visit(beginVertex.value)) return; // 标记为访问过
+        visited.add(beginVertex);
+
+        Vertex<V, E> backOffVertex; // 标记深度遍历过程中回退所经过的顶点
+        Vertex<V, E> forwardVertex; // 标记深度遍历过程中下一个目标顶点
+
+        while (!stack.isEmpty()) {
+            // 弹出栈顶元素
+            backOffVertex = stack.pop();
+
+            // 挑选符合条件的出度边
+            for (Edge<V, E> edge : backOffVertex.outEdges) {
+                forwardVertex = edge.to;
+
+                // 选取一条未访问过的出度边
+                if (!visited.contains(forwardVertex)) {
+                    stack.push(edge.from); // 出度边的起点入栈
+                    stack.push(forwardVertex); // 出度边的终点入栈
+                    if (visitor.visit(forwardVertex.value)) return; // 访问
+                    visited.add(forwardVertex); // 标记未已访问
+
+                    // 一旦选取了一条出度边，就需要取消其他同级出度边的遍历(沿着一条路一直走下去)
+                    break;
+                }
+            }
+        }
     }
 
     /**
@@ -299,46 +345,6 @@ public class ListGraph<V, E> extends Graph<V, E> {
         }
 
         return list;
-    }
-
-    /**
-     * 图的深度优先遍历(栈实现)
-     *
-     * @param beginVertex 进行深度优先遍历的起始结点
-     * @param visitor     顶点访问接口
-     * @param visited     用于存储已经访问过的顶点的集合
-     */
-    public void depthFirstSearchWithStack(Vertex<V, E> beginVertex, Visitor<V> visitor, Set<Vertex<V, E>> visited) {
-        Stack<Vertex<V, E>> stack = new Stack<>();
-
-        /* 1.首先对起点进行访问并入栈 */
-        stack.push(beginVertex);
-        if (visitor.visit(beginVertex.value)) return; // 标记为访问过
-        visited.add(beginVertex);
-
-        Vertex<V, E> backOffVertex; // 标记深度遍历过程中回退所经过的顶点
-        Vertex<V, E> forwardVertex; // 标记深度遍历过程中下一个目标顶点
-
-        while (!stack.isEmpty()) {
-            // 弹出栈顶元素
-            backOffVertex = stack.pop();
-
-            // 挑选符合条件的出度边
-            for (Edge<V, E> edge : backOffVertex.outEdges) {
-                forwardVertex = edge.to;
-
-                // 选取一条未访问过的出度边
-                if (!visited.contains(forwardVertex)) {
-                    stack.push(edge.from); // 出度边的起点入栈
-                    stack.push(forwardVertex); // 出度边的终点入栈
-                    if (visitor.visit(forwardVertex.value)) return; // 访问
-                    visited.add(forwardVertex); // 标记未已访问
-
-                    // 一旦选取了一条出度边，就需要取消其他同级出度边的遍历(沿着一条路一直走下去)
-                    break;
-                }
-            }
-        }
     }
 
     /**
@@ -439,7 +445,10 @@ public class ListGraph<V, E> extends Graph<V, E> {
     @Override
     public Map<V, E> dijkstraSimpleVersion(V begin) {
         Vertex<V, E> beginVertex = this.vertices.get(begin); // 获取源点
-        if (beginVertex == null) return null;
+        if (beginVertex == null) {
+            System.out.println("源点不存在~");
+            return null;
+        }
 
         // 存储最终源点到其他顶点的正确的最短路径
         Map<V, E> selectedPaths = new HashMap<>();
@@ -494,7 +503,8 @@ public class ListGraph<V, E> extends Graph<V, E> {
     }
 
     /**
-     * 从 unSelectedPath 中选出最短路径(不使用最小堆是因为最小堆采用的整数索引要与 map 的 key 关联起来比较麻烦,要使用索引堆)
+     * 从 unSelectedPath 中选出最短路径
+     * (不使用最小堆是因为最小堆采用的整数索引要与 map 的 key 关联起来比较麻烦(由于挑选最短路径的过程中需要通过终点作为 key 来索引最短路径,而小顶堆又只能根据整数来索引数据),要使用索引堆)
      *
      * @param unSelectedPaths {终点1: 最短路径权值1, 终点2: 最短路径权值2, ...}
      * @return {最短路径的终点: 最短路径的权值}
@@ -523,23 +533,18 @@ public class ListGraph<V, E> extends Graph<V, E> {
     @Override
     public Map<V, FullPathInfo<V, E>> dijkstraFullVersion(V begin) {
         Vertex<V, E> beginVertex = this.vertices.get(begin); // 获取源点
-        if (beginVertex == null) return null;
+        if (beginVertex == null) {
+            System.out.println("源点不存在~");
+            return null;
+        }
 
         // 存储最终源点到其他顶点的正确的最短路径
         Map<V, FullPathInfo<V, E>> selectedPaths = new HashMap<>();
         // 存储迭代过程中源点到其他顶点的最短路径 {顶点: 源点到顶点的最短路径的完整信息}
         Map<Vertex<V, E>, FullPathInfo<V, E>> unSelectedPaths = new HashMap<>();
 
-        // 初始化 unSelectedPath，这里没有添加无法直接到达的顶点的最短路径，
-        // 就相当于后续以该顶点为 key 拿到的是 null,在下面判断时以拿到 null 来表示 ∞
-        beginVertex.outEdges.forEach((Edge<V, E> edge) -> {
-            // 获取出度边的完整路径信息
-            FullPathInfo<V, E> fullPathInfo = new FullPathInfo<>();
-            fullPathInfo.weight = edge.weight;
-            fullPathInfo.edgeInfos.add(edge.getEdgeInfo());
-
-            unSelectedPaths.put(edge.to, fullPathInfo);
-        });
+        // 初始化源点到源点的路径,后续对源点的出度边也一视同仁的执行松弛操作(这里换另一种思路来统一逻辑)(相当于添加哨兵)
+        unSelectedPaths.put(beginVertex, new FullPathInfo<>(this.weightManager.zero()));
 
         Entry<Vertex<V, E>, FullPathInfo<V, E>> minPath;
         Vertex<V, E> minEndVertex;
@@ -559,15 +564,16 @@ public class ListGraph<V, E> extends Graph<V, E> {
             for (Edge<V, E> edge : minEndVertex.outEdges) {
                 endVertex = edge.to; // 挑选的最短路径终点出度边的终点
 
-                // (如果是无向图)出度边终点指向 selectedPath 中已选择路径的终点或指向源点则跳过
-                if (selectedPaths.containsKey(endVertex.value) || endVertex.equals(beginVertex))
+                // (如果是无向图)出度边终点指向 selectedPath 中已选择路径的终点则跳过
+                if (selectedPaths.containsKey(endVertex.value))
                     continue;
 
                 // 对 minPath 的终点 minEndVertex 的所有出度边 edge 执行松弛操作
-                this.relax(unSelectedPaths, minPath, edge);
+                this.relaxToDijkstra(unSelectedPaths, minPathInfo, edge);
             }
         }
 
+        selectedPaths.remove(beginVertex.value); // 将源点到源点的最短路径删除
         return selectedPaths;
     }
 
@@ -575,40 +581,40 @@ public class ListGraph<V, E> extends Graph<V, E> {
      * 对边 edge 执行松弛操作，试图更新源点到 edge.to 的最短路径
      *
      * @param unSelectedPaths 尚未确定的最短路径集
-     * @param fromMinPath 已经确定的源点到 edge.from 的最短路径
-     * @param edge 需执行松弛操作的边
+     * @param fromMinPathInfo 已经确定的源点到 edge.from 的最短路径信息
+     * @param edge            需执行松弛操作的边
      */
-    private void relax(
+    private void relaxToDijkstra(
             Map<Vertex<V, E>, FullPathInfo<V, E>> unSelectedPaths,
-            Entry<Vertex<V, E>, FullPathInfo<V, E>> fromMinPath,
+            FullPathInfo<V, E> fromMinPathInfo,
             Edge<V, E> edge
     ) {
         // unSelectedPath 获取源点到 edge.to 的旧的最短路径
-        FullPathInfo<V, E> oldMinPath = unSelectedPaths.get(edge.to);
+        FullPathInfo<V, E> oldMinPathInfo = unSelectedPaths.get(edge.to);
 
         // 因 edge.from 的连通而得到源点到 edge.to 的新路径的权值:
         // (源点到 edge.from 的最短路径的权值 + 边 edge 的权值)
-        E newWeight = this.weightManager.add(fromMinPath.getValue().weight, edge.weight);
+        E newWeight = this.weightManager.add(fromMinPathInfo.weight, edge.weight);
 
         /* 试图更新 unSelectedPath 中的最短路径 */
 
-        // 如果旧路径存在且新路径比旧路径长则跳过
-        if (oldMinPath != null && this.weightManager.compare(newWeight, oldMinPath.weight) > 0)
+        // 如果旧路径存在且新路径比旧路径长或相等则跳过
+        if (oldMinPathInfo != null && this.weightManager.compare(newWeight, oldMinPathInfo.weight) >= 0)
             return;
 
         // oldMinPath == null 表示原先 unSelectedPath 中源点到 edge.to 的最短路径没有找到,因此需要创建一条出来
-        if (oldMinPath == null) {
-            oldMinPath = new FullPathInfo<>();
-            unSelectedPaths.put(edge.to, oldMinPath);
+        if (oldMinPathInfo == null) {
+            oldMinPathInfo = new FullPathInfo<>();
+            unSelectedPaths.put(edge.to, oldMinPathInfo);
         } else {
             // 将源点到 edge.to 的旧的最短路径清空
-            oldMinPath.edgeInfos.clear();
+            oldMinPathInfo.edgeInfos.clear();
         }
 
         // 添加新找到的从源点到 edge.to 的最短路径
-        oldMinPath.edgeInfos.addAll(fromMinPath.getValue().edgeInfos); // 首先添加源点到 edge.from 的最短路径
-        oldMinPath.edgeInfos.add(edge.getEdgeInfo()); // 接着添加路径: edge.from -> edge.to
-        oldMinPath.weight = newWeight; // 更新 源点 -> edge.to 路径的权值
+        oldMinPathInfo.edgeInfos.addAll(fromMinPathInfo.edgeInfos); // 首先添加源点到 edge.from 的最短路径
+        oldMinPathInfo.edgeInfos.add(edge.getEdgeInfo()); // 接着添加路径: edge.from -> edge.to
+        oldMinPathInfo.weight = newWeight; // 更新 源点 -> edge.to 路径的权值
     }
 
     /**
@@ -630,6 +636,199 @@ public class ListGraph<V, E> extends Graph<V, E> {
         }
 
         return minPath;
+    }
+
+    /**
+     * 求单源最短路径的 贝尔曼-福特 算法
+     *
+     * @param begin 需要求最短路径的源点的 value
+     * @return 源点到其他所有顶点的最短路径的完整信息(总权值 + 路径上的所有边信息)
+     */
+    @Override
+    public Map<V, FullPathInfo<V, E>> bellmanFord(V begin) {
+        Vertex<V, E> beginVertex = this.vertices.get(begin); // 获取源点
+        if (beginVertex == null) {
+            System.out.println("源点不存在~");
+            return null;
+        }
+
+        // 存储迭代过程中找到的源点到其他顶点的最短路径(对于本次迭代而言是最短路径)信息
+        Map<V, FullPathInfo<V, E>> unselectedPaths = new HashMap<>();
+
+        // 后面初始迭代时需要有源点到源点权值 '0' 的路径(如何表示权值 0 由用户定义),便于后面对源点的出度边执行松弛操作
+        // 注意1.不需要设置 edgeInfos 为 begin -> begin
+        unselectedPaths.put(begin, new FullPathInfo<>(this.weightManager.zero()));
+
+        int count = this.vertices.size() - 1; // 计算需要松弛的最大次数
+        boolean isComplete; // 标识所有顶点的最短路径是否都已经得到
+
+        FullPathInfo<V, E> fromMinPathInfo;
+
+        // 执行 v-1 次迭代
+        for (int i = 0; i < count; i++) {
+            isComplete = true; // 假设所有最短路径都已经确定
+
+            // 对所有边执行一次松弛操作
+            for (Edge<V, E> edge : this.edges) {
+                fromMinPathInfo = unselectedPaths.get(edge.from.value); // 源点到 edge.from 的最短路径信息
+                // 源点到 edge.from 的最短路径为 null,说明对 edge 进行松弛操作一定会失败,因此直接跳过
+                if (fromMinPathInfo == null) continue;
+
+                // 只要有一条边松弛成功就说明还没有确定所有的最短路径(就还需要进行下一轮的对所有边进行松弛操作)
+                if (this.relaxToBellmanFord(unselectedPaths, fromMinPathInfo, edge))
+                    isComplete = false;
+            }
+
+            // 如果本轮的对所有边执行的松弛操作都失败则说明所有的最短路径都已经得到,提前结束迭代
+            if (isComplete) break;
+        }
+
+        for (Edge<V, E> edge : this.edges) {
+            fromMinPathInfo = unselectedPaths.get(edge.from.value);
+            if (fromMinPathInfo == null) continue;
+
+            // 对所有边执行第 v 次松弛操作(如果还存在边松弛成功则说明图中有负权环)
+            if (this.relaxToBellmanFord(unselectedPaths, fromMinPathInfo, edge)) {
+                System.out.println("存在负权环,无法得到最短路径~");
+                return null;
+            }
+        }
+
+        unselectedPaths.remove(begin); // 移除源点到源点的路径
+        return unselectedPaths;
+    }
+
+    /**
+     * 对边 edge 执行松弛操作，试图更新源点到 edge.to 的最短路径
+     *
+     * @param unSelectedPaths 迭代中的最短路径集
+     * @param fromMinPathInfo unSelectedPaths 中 源点到 edge.from 的最短路径信息
+     * @param edge            需执行松弛操作的边
+     */
+    private boolean relaxToBellmanFord(
+            Map<V, FullPathInfo<V, E>> unSelectedPaths,
+            FullPathInfo<V, E> fromMinPathInfo,
+            Edge<V, E> edge
+    ) {
+        // unSelectedPath 获取源点到 edge.to 的旧的最短路径
+        FullPathInfo<V, E> oldMinPath = unSelectedPaths.get(edge.to.value);
+
+        // 因 edge.from 的连通而得到源点到 edge.to 的新路径的权值:
+        // (源点到 edge.from 的最短路径的权值 + 边 edge 的权值)
+        E newWeight = this.weightManager.add(fromMinPathInfo.weight, edge.weight);
+
+        /* 试图更新 unSelectedPath 中的最短路径 */
+
+        // 如果旧路径存在且新路径比旧路径长则跳过
+        if (oldMinPath != null && this.weightManager.compare(newWeight, oldMinPath.weight) >= 0)
+            return false;
+
+        // oldMinPath == null 表示原先 unSelectedPath 中源点到 edge.to 的最短路径没有找到,因此需要创建一条出来
+        if (oldMinPath == null) {
+            oldMinPath = new FullPathInfo<>();
+            unSelectedPaths.put(edge.to.value, oldMinPath);
+        } else {
+            // 将源点到 edge.to 的旧的最短路径清空
+            oldMinPath.edgeInfos.clear();
+        }
+
+        // 添加新找到的从源点到 edge.to 的最短路径
+        oldMinPath.edgeInfos.addAll(fromMinPathInfo.edgeInfos); // 首先添加源点到 edge.from 的最短路径
+        oldMinPath.edgeInfos.add(edge.getEdgeInfo()); // 接着添加路径: edge.from -> edge.to
+        oldMinPath.weight = newWeight; // 更新 源点 -> edge.to 路径的权值
+
+        return true;
+    }
+
+    /**
+     * 求多源最短路径的佛洛伊德算法
+     *
+     * @return 以图中任一顶点为源点到其余所有顶点的最短路径: {
+     * /             顶点1:{顶点2:顶点1到顶点2的最短路径, 顶点3:顶点1到顶点3的最短路径, ...},
+     * /             顶点2:{顶点1:顶点2到顶点1的最短路径, 顶点3:顶点2到顶点3的最短路径, ...},
+     * /             顶点3:{顶点1:顶点3到顶点1的最短路径, 顶点2:顶点3到顶点2的最短路径, ...},
+     * /             ...
+     * /         }
+     */
+    @Override
+    public Map<V, Map<V, FullPathInfo<V, E>>> floyd() {
+        Map<V, Map<V, FullPathInfo<V, E>>> allVertexPaths = new HashMap<>();
+
+        // 初始时装入图中所有可直达的路径
+        this.edges.forEach((Edge<V, E> edge) -> {
+            // 获取以 edge.from 为源点到其他顶点的最短路径集
+            Map<V, FullPathInfo<V, E>> path = allVertexPaths.get(edge.from.value);
+
+            // 注意这里不能不判断就直接 new HashMap,因为存在一个顶点有多个出度边的可能。
+            if (path == null) {
+                path = new HashMap<>();
+                allVertexPaths.put(edge.from.value, path);
+            }
+
+            // 装入 edge.from 的直达路径(出度边)信息
+            FullPathInfo<V, E> pathInfo = new FullPathInfo<>(edge.weight);
+            pathInfo.edgeInfos.add(edge.getEdgeInfo());
+            path.put(edge.to.value, pathInfo);
+        });
+
+        // 任一顶点到其余所有顶点的最短路径中加入任一顶点 k 进行试探
+        this.vertices.forEach((V k, Vertex<V, E> kVertex) -> { // O(v)
+            // 试探图中任一顶点为源点的情况
+            this.vertices.forEach((V i, Vertex<V, E> iVertex) -> { // O(v)
+                // 试探以顶点 i 为源点到其余所有顶点的最短路径
+                this.vertices.forEach((V j, Vertex<V, E> jVertex) -> { // O(v)
+                    if (k == i || k == j || i == j) return;
+
+                    // 获取 i->j 的最短路径
+                    FullPathInfo<V, E> i2jPathInfo = this.getPathInfo(allVertexPaths, i, j);
+
+                    // 获取 i->k 的最短路径
+                    FullPathInfo<V, E> i2kPathInfo = this.getPathInfo(allVertexPaths, i, k);
+
+                    // 获取 k->j 的最短路径
+                    FullPathInfo<V, E> k2jPathInfo = this.getPathInfo(allVertexPaths, k, j);
+
+                    // i->k 或 k->j 不存在则无需更新 i->j
+                    if (i2kPathInfo == null || k2jPathInfo == null) return;
+
+                    // 判断 i->k->j 的权值是否小于 i->j 的权值
+                    E newWeight = this.weightManager.add(i2kPathInfo.weight, k2jPathInfo.weight);
+                    if (i2jPathInfo != null && this.weightManager.compare(newWeight, i2jPathInfo.weight) >= 0) return;
+
+                    /* i->j 为 null 或 i->k->j 的权值小于 i->j 的权值则将 i->j 替换为 i->k->j */
+
+                    if (i2jPathInfo == null) { // 之前不存在 i->j 这条路径则创建一条
+                        i2jPathInfo = new FullPathInfo<>();
+                        allVertexPaths.get(i).put(j, i2jPathInfo);
+                    } else { // 清空 i-j 的旧路径
+                        i2jPathInfo.edgeInfos.clear();
+                    }
+
+                    // 将 i->j 的最短路径更新为 i->k->j
+                    i2jPathInfo.edgeInfos.addAll(i2kPathInfo.edgeInfos);
+                    i2jPathInfo.edgeInfos.addAll(k2jPathInfo.edgeInfos);
+                    i2jPathInfo.weight = newWeight;
+                });
+            });
+        });
+
+        return allVertexPaths;
+    }
+
+    /**
+     * 从 allVertexPaths 中获取从 begin 到 end 的最短路径
+     *
+     * @param allVertexPaths 存储了图中任一顶点到其余所有顶点的最短路径
+     * @param begin          路径的源点
+     * @param end            路径的终点
+     */
+    private FullPathInfo<V, E> getPathInfo(Map<V, Map<V, FullPathInfo<V, E>>> allVertexPaths, V begin, V end) {
+        Map<V, FullPathInfo<V, E>> beginPaths = allVertexPaths.get(begin);
+
+        if (beginPaths == null)
+            beginPaths = new HashMap<>();
+
+        return beginPaths.get(end);
     }
 
     /**

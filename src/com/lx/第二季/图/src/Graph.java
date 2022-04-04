@@ -122,7 +122,7 @@ public abstract class Graph<V, E> {
     public abstract Set<EdgeInfo<V, E>> getMstWithKruskal();
 
     /**
-     * 求单源最短路径的迪杰斯特拉算法(简单版)
+     * 求单源最短路径的 迪杰斯特拉 算法(简单版)
      *
      * @param begin 需要求最短路径的源点的 value
      * @return 源点到其他所有顶点的最短路径的权值
@@ -130,12 +130,27 @@ public abstract class Graph<V, E> {
     public abstract Map<V, E> dijkstraSimpleVersion(V begin);
 
     /**
-     * 求单源最短路径的迪杰斯特拉算法(完整版)
+     * 求单源最短路径的 迪杰斯特拉 算法(完整版)
      *
      * @param begin 需要求最短路径的源点的 value
      * @return 源点到其他所有顶点的最短路径的权值和最短路径所经过的结点信息
      */
     public abstract Map<V, FullPathInfo<V, E>> dijkstraFullVersion(V begin);
+
+    /**
+     * 求单源最短路径的 贝尔曼-福特 算法
+     *
+     * @param begin 需要求最短路径的源点的 value
+     * @return 源点到其他所有顶点的最短路径的完整信息(总权值 + 路径上的所有边信息)
+     */
+    public abstract Map<V, FullPathInfo<V, E>> bellmanFord(V begin);
+
+    /**
+     * 求多源最短路径的佛洛伊德算法
+     *
+     * @return 以图中任一顶点为源点到其余所有顶点的最短路径
+     */
+    public abstract Map<V, Map<V, FullPathInfo<V, E>>> floyd();
 
     /**
      * 最短路径算法中返回的完整路径信息类型
@@ -148,6 +163,13 @@ public abstract class Graph<V, E> {
         public E weight;
         // 路径包含的所有边信息的列表(由于这些边是有序的且数量不确定,因此使用 LinkedList)
         List<EdgeInfo<V, E>> edgeInfos = new LinkedList<>();
+
+        public FullPathInfo() {
+        }
+
+        public FullPathInfo(E weight) {
+            this.weight = weight;
+        }
 
         @Override
         public String toString() {
@@ -230,6 +252,11 @@ public abstract class Graph<V, E> {
         // =0: w1==w2
         int compare(E w1, E w2);
 
-        E add(E w1, E w2); // 用于最小路径算法中计算路径权值之和时用到
+        // 用于最小路径算法中计算路径权值之和时用到
+        E add(E w1, E w2);
+
+        // 用户需要描述路径权值为 '0' (源点到源点)时的 weight
+        // BellmanFord 算法需要用到
+        E zero();
     }
 }
