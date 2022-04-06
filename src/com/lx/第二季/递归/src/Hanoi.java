@@ -1,4 +1,4 @@
-package com.lx.递归.src;
+package com.lx.第二季.递归.src;
 
 public class Hanoi {
     /**

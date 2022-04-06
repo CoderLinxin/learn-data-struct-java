@@ -1,6 +1,6 @@
-package com.lx.递归.src;
+package com.lx.第二季.回溯.src;
 
-public class Queens {
+public class Queens0 {
     /**
      * n 皇后问题(摆放在 n*n 的棋盘):每一行摆放一个皇后,皇后所在行列、正负对角线 不能有其他皇后
      * 计算 n 皇后在棋盘上共有多少种摆法
@@ -36,10 +36,8 @@ public class Queens {
 
         // 一一试探当前行的每个合法列,试图摆放皇后
         for (int col = 0; col < cols.length; col++) {
-
-            // 这里相当于做了剪枝操作(可行性剪枝)
             if (isValid(currentRow, col)) { // 当前列是否可摆放皇后
-                cols[currentRow] = col; // 记录摆放位置
+                cols[currentRow] = col; // 记录摆放位置(每次进行回溯后进行的新操作都会重新覆盖掉这里的旧操作,因此不需要还原现场)
 
                 // 继续摆放下一行的皇后
                 place(currentRow + 1); // 该函数调用完成相当于进行了回溯,继续试探当前行的下一个合法列
@@ -47,10 +45,8 @@ public class Queens {
         }
     }
 
-    static int a = 0;
-
     // 判断在 currentRow 行 col 列摆放皇后是否合法
-    private static boolean isValid(int currentRow, int col) {
+    private static boolean isValid(int currentRow, int col) { // O(n)
         // 遍历 currentRow 之前行已经摆好的皇后所在位置
         for (int i = 0; i < currentRow; i++) {
             // 检测是否存在于所有摆放好的皇后的那一列
@@ -81,6 +77,7 @@ public class Queens {
         }
         System.out.println();
     }
+
 
     public static void main(String[] args) {
         placeQueens(8);

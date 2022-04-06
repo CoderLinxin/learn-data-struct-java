@@ -1,4 +1,4 @@
-package com.lx.递归.src;
+package com.lx.第二季.递归.src;
 
 public class Fibonacci {
     // 1.朴素递归法求斐波那契数列第 n 项
