@@ -3,7 +3,35 @@ package com.lx.第二季.动态规划.src;
 // 零钱兑换问题
 public class MoneyChange {
     /**
-     * 递推(动态规划): 自底向上(n: 小->大)调用
+     * 零钱兑换通用实现
+     *
+     * @param n             待找的总零钱数
+     * @param Denominations 拥有的硬币面额
+     * @return 找 n 分钱所需的最少硬币数(如果凑不了则返回 -1)
+     */
+    public static int moneyChange4(int n, int[] Denominations) {
+        if (n < 1) return -1;
+
+        int[] dp = new int[n + 1]; // dp[n] 表示找 n 分钱所需的最少硬币数
+
+        for (int i = 1; i <= n; i++) {
+            int min = Integer.MAX_VALUE;
+
+            for (int denomination : Denominations)
+                // i == denomination 时,正好 dp[0] 为 0,本轮的 dp[i] 恰好可以设置为 1(无需我们显式设置初始状态)
+                // 凑够 i 分钱的前提是能凑够 i - denomination 分钱,例如 n = 6,零钱面额只有 5、10,那么 6-5 = 1,选择了一枚5分硬币后剩下的硬币无法凑够1分
+                if (i >= denomination && dp[i - denomination] != -1)
+                    min = Math.min(min, dp[i - denomination]);
+
+            if (min == Integer.MAX_VALUE) dp[i] = -1; // 给出的 n 小于面额的情况(无法凑)
+            else dp[i] = min + 1;
+        }
+
+        return dp[n];
+    }
+
+    /**
+     * 递推/迭代(动态规划): 自底向上(n: 小->大)调用(消除了递归调用,进一步降低了空间复杂度)
      * 由前面的递归调用我们可以知道:
      * 求 dp(n) 要先求 Math.min(dp(n-1),dp(n-5),dp(n-20),dp(n-25))
      * 那可否反过来先求(n值较小的情况) Math.min(dp(n-1),dp(n-5),dp(n-20),dp(n-25)) 再根据已求得的状态(递推)得到 dp(n) 呢
@@ -57,7 +85,6 @@ public class MoneyChange {
         return dp[n];
     }
 
-
     /**
      * 打印:解出 dp[1] ~ dp[n] 的过程
      *
@@ -70,7 +97,7 @@ public class MoneyChange {
         while (n > 0) {
             // 既然 faces[n] 是凑够 n 分钱所选择的最后那枚硬币的面额
             // 那么 faces[n-face[n]] 就是凑够 n-face[n] 分钱所选择的最后那枚硬币的面额,也即凑够 n 分钱所选择的倒数第二枚硬币的面额
-            System.out.print(faces[n]+"分、");
+            System.out.print(faces[n] + "分、");
             n -= faces[n];
         }
         System.out.println();
@@ -136,5 +163,6 @@ public class MoneyChange {
         System.out.println(moneyChange1(41));
         System.out.println(moneyChange2(41));
         System.out.println(moneyChange3(41));
+        System.out.println(moneyChange4(5, new int[]{ 5, 20, 25}));
     }
 }
