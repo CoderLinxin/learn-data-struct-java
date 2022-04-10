@@ -36,6 +36,7 @@ public class LongestCommonSubsequence {
             int current = dp[0]; // 保存本次迭代被覆盖的旧的 dp[j],每一轮迭代开始前都要初始化为 0(dp[0])
 
             for (int col = 1; col <= cols.length(); col++) {
+                // 或者直接从尾部开始遍历 cols，这样就不用弄一个临时遍历 leftTop
                 leftTop = current; // 获取上一次迭代保存的旧的被覆盖掉的 dp[col-1]
                 current = dp[col]; // 保存本次迭代即将被覆盖的旧的 dp[col]
 
