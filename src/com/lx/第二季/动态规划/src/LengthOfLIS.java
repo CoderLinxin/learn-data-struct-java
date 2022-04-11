@@ -3,6 +3,85 @@ package com.lx.第二季.动态规划.src;
 // 最长上升子序列问题:https://leetcode-cn.com/problems/longest-increasing-subsequence/
 public class LengthOfLIS {
     /**
+     * 贪心 + 二分搜索 解最长上升子序列问题
+     * 由于 tops 数组是一个递增序列，因此在寻找目标牌堆时采用二分搜索方式来进行
+     * 空间复杂度: O(n)
+     * 时间复杂度: O(nlogn)
+     *
+     * @param nums 源序列
+     * @return 最长上升子序列长度
+     */
+    public int lengthOfLIS3(int[] nums) {
+        if (nums == null || nums.length == 0) return 0;
+
+        // 用于存放每个牌堆的堆顶元素的数组(最坏情况下可能一个元素自成一个牌堆)
+        int[] tops = new int[nums.length];
+        int len = 0; // 记录牌堆数量(最长上升子序列长度)
+
+        for (int num : nums) { // O(n)
+            // 查找区间为 [begin, end)
+            int begin = 0;
+            int end = len;
+            int mid;
+
+            // begin < end 的情况说明搜索区间存在，可以迭代
+            while (begin < end) { // O(logn)
+                mid = (begin + end) >> 1;
+
+                // 查找第一个大于等于 value 的元素位置
+                if (num <= tops[mid])
+                    end = mid;
+                else
+                    begin = mid + 1;
+            }
+
+            // begin == end 的情况说明找到了插入位置
+            tops[begin] = num;
+            if (begin == len) len++; // 插入位置索引为 len，则说明建立了新牌堆
+        }
+
+        return len;
+    }
+
+    /**
+     * 贪心算法解最长上升子序列问题
+     * 空间复杂度: O(n)
+     * 时间复杂度: O(n^2)
+     *
+     * @param nums 源序列
+     * @return 最长上升子序列长度
+     */
+    public int lengthOfLIS2(int[] nums) {
+        if (nums == null || nums.length == 0) return 0;
+
+        // 用于存放每个牌堆的堆顶元素的数组(最坏情况下可能一个元素自成一个牌堆)
+        int[] tops = new int[nums.length];
+        int len = 0; // 记录牌堆数量(最长上升子序列长度)
+
+        // nums 序列所有元素试图加入牌堆(寻找以 nums[j] 结尾的最长上升子序列长度)
+        for (int num : nums) { // O(n)
+            int i = 0;
+
+            while (i < len) { // O(n)
+                // 跳过所有比 num 小的堆顶元素
+                if (num <= tops[i]) {
+                    tops[i] = num; // 覆盖牌堆的堆顶元素
+                    break;
+                }
+
+                i++;
+            }
+
+            if (i == len) { // 新建牌堆的情况
+                tops[i] = num;
+                len++;
+            }
+        }
+
+        return len;
+    }
+
+    /**
      * 动态规划解最长上升子序列问题
      * 时间复杂度: O(n^2)
      * 空间复杂度: O(n)
@@ -10,7 +89,7 @@ public class LengthOfLIS {
      * @param nums 源序列
      * @return 最长上升子序列长度
      */
-    public int lengthOfLIS(int[] nums) {
+    public int lengthOfLIS1(int[] nums) {
         // 1.定义状态: dp[i] 表示以 nums[i] 结尾的最长上升子序列的长度
         int[] dp = new int[nums.length];
 
