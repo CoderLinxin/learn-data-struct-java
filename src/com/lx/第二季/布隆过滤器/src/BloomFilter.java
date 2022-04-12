@@ -1,5 +1,7 @@
 package com.lx.第二季.布隆过滤器.src;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 /**
  * 布隆过滤器
  *
@@ -7,7 +9,7 @@ package com.lx.第二季.布隆过滤器.src;
  */
 public class BloomFilter<T> {
     private final int bitSize; // 数据规模(二进制向量的长度)
-    long[] bits; // 存放二进制向量,每个数组元素相当于 64 位二进制向量(1 个二进制位的值代表某个元素是否存在)
+    long[] bits; // 每个数组元素相当于 64 位二进制向量,所有的数组元素组成一个大的二进制向量(1 个二进制位的值代表某个元素是否存在)
     long hashSize; // 哈希函数的个数
 
     /**
@@ -39,8 +41,10 @@ public class BloomFilter<T> {
     public void put(T value) {
         nullCheck(value);
 
-        locating(value, (int index) -> {
-
+        locating(value, (long element, int blockIndex, int offsetIndex) -> {
+            // 设置 value 对应的二进制位值为 1
+            bits[blockIndex] = element | (1 << offsetIndex);
+            return false;
         });
     }
 
@@ -53,13 +57,25 @@ public class BloomFilter<T> {
     public boolean contains(T value) {
         nullCheck(value);
 
-        locating(value, (int index) -> {
+        AtomicBoolean isExist = new AtomicBoolean(true);
 
+        locating(value, (long element, int blockIndex, int offsetIndex) -> {
+            long testData = 1 << offsetIndex;
+
+            // 查看 value 对应的所有二进制位是否都为 1,只要 1 个不为 1 就判定不存在
+            if ((element & testData) != testData) {
+                isExist.set(false);
+                return true; // 提前终止后续定位
+            }
+
+            return false;
         });
+
+        return isExist.get();
     }
 
     /**
-     * 根据元素定位其在二进制向量中的索引
+     * 根据元素生成哈希值定位其在二进制向量中的索引
      *
      * @param value 待定位的元素
      */
@@ -77,7 +93,14 @@ public class BloomFilter<T> {
 
             // 根据哈希值计算出指定二进制位的索引
             int index = combinedHash % this.bitSize;
-            afterLocated.afterLocated(index);
+
+            // 根据位索引获取块索引(用于定位 long 数组中的元素)(块间索引从左往右)
+            int blockIndex = index / Long.SIZE;
+            // 获取块内索引(偏移),用于定位 long 数组元素的某个二进制位(块内索引从右往左)
+            int offsetIndex = index % Long.SIZE;
+            long element = bits[blockIndex]; // 定位到指定 long 元素
+
+            if (afterLocated.afterLocated(element, blockIndex, offsetIndex)) return;
         }
     }
 
@@ -92,8 +115,13 @@ public class BloomFilter<T> {
      */
     private interface AfterLocated {
         /**
-         * @param index 指定二进制位的索引
+         * 定位到指定的二进制位
+         *
+         * @param element     二进制位所在 long 数组中的元素
+         * @param blockIndex  二进制位所在的 long 数组元素下标
+         * @param offsetIndex 二进制位所在 long 数组元素中的位索引
+         * @return 是否允许提前终止后续定位
          */
-        void afterLocated(int index);
+        boolean afterLocated(long element, int blockIndex, int offsetIndex);
     }
 }
