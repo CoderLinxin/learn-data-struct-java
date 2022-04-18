@@ -2,21 +2,29 @@ package com.lx.第三季.链表;
 
 // https://leetcode-cn.com/problems/palindrome-linked-list/
 public class 回文链表 {
+    /**
+     * 判断链表是否是回文链表
+     * 时间复杂度: O(n)
+     * 空间复杂度: O(1)
+     *
+     * @param head 源链表的首结点指针
+     * @return 是否是回文链表
+     */
     public boolean isPalindrome(ListNode head) {
         if (head == null || head.next == null) return true; // 链表为空或只有一个元素也视为回文链表
         if (head.next.next == null) return head.val == head.next.val; // 链表只有两个元素的情况
 
-        // 1.找到中间结点
+        // 1.找到中间结点: O(n)
         ListNode midNode = findMiddleNode(head);
 
-        // 2.根据中间结点反转右半部分链表
+        // 2.根据中间结点反转右半部分链表: O(n)
         ListNode rHead = reverseList(midNode.next);
 
         ListNode curR = rHead;
         ListNode curL = head;
         boolean result = true;
 
-        // 3.同时遍历左半部分链表、右半部分反转链表
+        // 3.同时遍历左半部分链表、右半部分反转链表: O(n)
         while (curR != null) {
             if (curR.val != curL.val) { // 元素不同则不是回文链表
                 result = false;
@@ -28,7 +36,7 @@ public class 回文链表 {
             curL = curL.next;
         }
 
-        // 为了不破坏链表结点，将右边部分链表反转回来
+        // 为了不破坏链表结点，将右边部分链表反转回来: O(n)
         reverseList(rHead);
 
         // 遍历完右边的反转链表则说明源链表是一个回文链表

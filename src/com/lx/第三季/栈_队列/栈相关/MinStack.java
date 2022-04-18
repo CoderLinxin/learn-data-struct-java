@@ -1,4 +1,4 @@
-package com.lx.第三季.栈_队列;
+package com.lx.第三季.栈_队列.栈相关;
 
 import java.util.Stack;
 

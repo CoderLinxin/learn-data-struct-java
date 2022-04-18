@@ -3,6 +3,8 @@ package com.lx.第三季.链表;
 public class 相交链表 {
     /**
      * 求出链表 A、B 相交的起始结点
+     * 时间复杂度: O(n+m),n 为链表 A 的长度，m 为链表 B 的长度
+     * 空间复杂度: O(1)
      *
      * @param headA 链表 A 的首结点
      * @param headB 链表 B 的首结点

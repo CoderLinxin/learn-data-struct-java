@@ -2,6 +2,7 @@
   <dictionary name="Administrator">
     <words>
       <w>elog</w>
+      <w>fliped</w>
       <w>heapify</w>
       <w>logn</w>
       <w>nexts</w>
@@ -10,6 +11,7 @@
       <w>nlogn</w>
       <w>spliting</w>
       <w>topo</w>
+      <w>αlogn</w>
     </words>
   </dictionary>
 </component>
