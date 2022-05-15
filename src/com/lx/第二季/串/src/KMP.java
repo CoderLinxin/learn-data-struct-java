@@ -42,7 +42,7 @@ public class KMP {
      * 求解模式串的 nextVal 数组
      *
      * @param pattern 模式串
-     * @return 模式串的 next 数组
+     * @return 模式串的 nextVal 数组
      */
     private static int[] getNextVal(String pattern) {
         char[] patternArray = new char[pattern.length()];
