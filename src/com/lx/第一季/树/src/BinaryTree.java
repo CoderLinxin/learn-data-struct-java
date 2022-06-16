@@ -57,6 +57,10 @@ public class BinaryTree<E> implements BinaryTreeInfo { // BinaryTreeInfo 用于�
         this.postOrderTraversalNoRecursion(this.root, visitor);
     }
 
+    public void postOrderTraversalNoRecursion2(Visitor<E> visitor) {
+        this.postOrderTraversalNoRecursion2(this.root, visitor);
+    }
+
     public void levelTraversal(Visitor<E> visitor) {
         this.levelTraversal(this.root, visitor);
     }
@@ -216,6 +220,11 @@ public class BinaryTree<E> implements BinaryTreeInfo { // BinaryTreeInfo 用于�
             Node<E> topNode = stack.peek();
             if ((topNode.left == null
                     && topNode.right == null)
+                    // 由于右子树根结点先入栈而后左子树根结点后入栈，
+                    //（1）在某结点A的左右子树均存在的情况下，当栈顶结点为A时，A的右子树如果已访问完(且上一次访问的结点必然为右子树的根结点)，
+                    //  那么A的左子树必然在右子树访问之前也已访问完（出栈），因此结点A出栈条件仅需满足 topNode.right == node
+                    //（2）在某结点A仅存在左子树的情况下，当栈顶结点为A时，A出栈条件需要满足 topNode.left == node
+                    //（3）在某结点A仅存在右子树的情况下，当栈顶结点为A时，A出栈条件需要满足 topNode.right == node
                     || (topNode.left == node
                     || topNode.right == node)) {
                 // 记录上一次访问的结点，由于第一次访问(出栈)的必然是叶子结点
@@ -227,6 +236,53 @@ public class BinaryTree<E> implements BinaryTreeInfo { // BinaryTreeInfo 用于�
             } else {
                 if (topNode.right != null) stack.push(topNode.right);
                 if (topNode.left != null) stack.push(topNode.left);
+            }
+        }
+    }
+
+    /**
+     * 后序遍历（栈实现2）
+     * 主要思路:
+     *  沿着根结点的左子树一直往下走，假设工作指针为node，当node.left为null时，存在两种情况:
+     *      node.right不为空且未访问过node的右子树:
+     *          这种情况表明node是首次从祖先结点一路往左走下来的，为了保证左右根的访问顺序，此时需要往右子树的路径走;
+     *      node.right不为空且已访问过node的右子树:
+     *          这种情况表明node是在访问了node的右子树之后返回的，此时为了确保能够识别这种情况，因此设置一个visited指针记录上次访问的结点，
+     *          记录上一次出栈的元素(必然是node的右子树的根结点)，当node.right==visited，将node出栈即可;
+     *      node.right为空:
+     *          此时直接访问node即可
+     *
+     * @param node 根结点
+     */
+    private void postOrderTraversalNoRecursion2(Node<E> node, Visitor<E> visitor) {
+        if (node == null) return;
+
+        Stack<Node<E>> stack = new Stack<>();
+        stack.push(node);
+        node = node.left;
+        Node<E> visited = null; // 记录上一次访问的结点
+
+        while (!stack.isEmpty()) {
+            if (node != null) {
+                stack.push(node);
+                node = node.left; // 往左走
+            } else { // 判断当前栈顶结点的右子树遍历情况
+                node = stack.peek();
+
+                // 栈顶结点右子树不为空且上一次访问的结点不是栈顶结点的右子树
+                if (node.right != null && node.right != visited) {
+                    node = node.right; // 往右走
+                } else {
+                    // 栈顶结点的右子树为空或已经被访问过，则栈顶结点可以出栈并访问
+                    visited = stack.pop();
+                    visitor.visit(visited.element);
+                    // 当前栈顶元素A出栈后，最新的栈顶元素B必然为A的父结点，置node为null，便于下次遍历仅判断B的右子树遍历情况。
+                    // (1)当前栈顶元素A为B的左孩子(B的右子树必然没访问过):
+                    //  B的右子树存在，下次遍历时考虑往B的右子树走
+                    // (2)当前栈顶元素A为B的右孩子, 则B的左子树必然在A之前已访问过
+                    //  下次遍历时考虑B直接出栈并访问
+                    node = null;
+                }
             }
         }
     }
@@ -538,6 +594,6 @@ public class BinaryTree<E> implements BinaryTreeInfo { // BinaryTreeInfo 用于�
 
     @Override
     public Object string(Object node) {
-        return node;
+        return ((Node) node).element;
     }
 }

@@ -40,15 +40,16 @@ public class Main {
         for (int i = 0; i < data.length; i++)
             binarySearchTree1.add(data[i]);
         BinaryTrees.println(binarySearchTree1);
-        binarySearchTree1.remove(4);
-        BinaryTrees.println(binarySearchTree1);
+//        binarySearchTree1.remove(4);
+//        BinaryTrees.println(binarySearchTree1);
 
-        System.out.println(binarySearchTree1.isComplete());
+//        System.out.println(binarySearchTree1.isComplete());
+//
+//        System.out.println(binarySearchTree1);
+//        System.out.println(binarySearchTree1.getHeightWithLevelTraversal());
+//        System.out.println(binarySearchTree1.getHeightWithRecursion());
 
-        System.out.println(binarySearchTree1);
-        System.out.println(binarySearchTree1.getHeightWithLevelTraversal());
-        System.out.println(binarySearchTree1.getHeightWithRecursion());
-
+        System.out.println("打印遍历序列--------------------------------------------------------------");
         binarySearchTree1.preorderTraversal(new BinaryTree.Visitor<Integer>() {
             @Override
             public void visit(Integer element) {
@@ -89,21 +90,32 @@ public class Main {
         });
         System.out.println("");
 
+        System.out.println("后序递归遍历~");
         binarySearchTree1.postOrderTraversal(new BinaryTree.Visitor<Integer>() {
             @Override
             public void visit(Integer element) {
                 System.out.print(element + " ");
             }
         });
-        System.out.println("");
+        System.out.println("\n后序递归遍历~");
 
+        System.out.println("后序非递归遍历1~");
         binarySearchTree1.postOrderTraversalNoRecursion(new BinaryTree.Visitor<Integer>() {
             @Override
             public void visit(Integer element) {
                 System.out.print(element + " ");
             }
         });
-        System.out.println("");
+        System.out.println("\n后序非递归遍历1~");
+
+        System.out.println("后序非递归遍历2~");
+        binarySearchTree1.postOrderTraversalNoRecursion2(new BinaryTree.Visitor<Integer>() {
+            @Override
+            public void visit(Integer element) {
+                System.out.print(element + " ");
+            }
+        });
+        System.out.println("\n后序非递归遍历2~");
 
         binarySearchTree1.levelTraversal(new BinaryTree.Visitor<Integer>() {
             @Override
@@ -197,13 +209,13 @@ public class Main {
 
     public static void main(String[] args) {
         int[] data = new int[]{
-                9, 96, 24, 26, 97, 78, 39, 13, 55, 231
+                7, 4, 2, 5, 3, 9, 8, 11, 12
         };
 
-//        test1(data);
+        test1(data);
 //        test4(data);
 //        test5(10000000);
-        test6(data);
+//        test6(data);
 
     }
 }
